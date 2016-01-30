@@ -3,12 +3,25 @@
  */
 package edu.depaul.se491.resapp.actions.menuItem;
 
-import javax.servlet.http.HttpServlet;
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import edu.depaul.se491.resapp.actions.BaseAction;
 
 /**
- * @author usrm
+ * @author Malik
  *
  */
-public class Create extends HttpServlet {
+@WebServlet("/menuItem/create")
+public class Create extends BaseAction {
+	private static final long serialVersionUID = 1L; // ignore this
 
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	}
+	
 }
