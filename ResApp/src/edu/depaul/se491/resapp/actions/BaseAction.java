@@ -174,7 +174,7 @@ public class BaseAction extends HttpServlet {
 	protected MenuItemCategory getCategoryParam(HttpServletRequest request) {
 		MenuItemCategory category = null;
 		try {
-			category = MenuItemCategory.valueOf(ParamLabels.MenuItem.ITEM_CATEGORY);
+			category = MenuItemCategory.valueOf((String) request.getParameter(ParamLabels.MenuItem.ITEM_CATEGORY));
 		} catch (IllegalArgumentException | NullPointerException e) {
 		}
 		return category;
@@ -186,10 +186,10 @@ public class BaseAction extends HttpServlet {
 	 * @param defaultValue
 	 * @return
 	 */
-	protected double getDoubleParam(HttpServletRequest request, String doubleValue, double defaultValue) {
+	protected double getDoubleParam(HttpServletRequest request, String paramName, double defaultValue) {
 		double value = defaultValue;
 		try {
-			value = Double.parseDouble(doubleValue);
+			value = Double.parseDouble((String) request.getParameter(paramName));
 		} catch (NumberFormatException e) {
 			
 		}
