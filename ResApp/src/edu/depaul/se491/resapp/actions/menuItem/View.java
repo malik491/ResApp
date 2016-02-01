@@ -16,9 +16,7 @@ import edu.depaul.se491.enums.AccountRole;
 import edu.depaul.se491.resapp.actions.BaseAction;
 
 import edu.depaul.se491.utils.ParamLabels;
-import edu.depaul.se491.validators.CredentialsValidator;
 import edu.depaul.se491.validators.MenuItemValidator;
-import edu.depaul.se491.ws.clients.AccountServiceClient;
 import edu.depaul.se491.ws.clients.MenuServiceClient;
 
 /**
@@ -37,22 +35,17 @@ public class View extends BaseAction {
 			return;
 		}
 		
-		// set to view own account by default
+		String jspMsg = null;
+
+		long menuItemId = getIdParam(request, ParamLabels.MenuItem.ID, 0);
+		boolean isValid = new MenuItemValidator().validateId(menuItemId, false);
+
 		MenuItemBean menuItem = null;
 		
-		String menuItemIDPar = request.getParameter(ParamLabels.MenuItem.ID);
-		Long menuItemId = Long.parseLong(menuItemIDPar, 10);
-		
-		String jspMsg = null;
-		
-		if (loggedinAccount.getRole() == AccountRole.MANAGER && menuItemId != null) {
-			// validate menuItemID and then look up account (clicked 'view' from manage.jsp)
-			boolean isValid = new MenuItemValidator().validateId(menuItemId, false);
-			if (isValid) {
-				MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
-				menuItem = serviceClient.get(menuItemId);
-				jspMsg = (menuItem == null)? serviceClient.getResponseMessage() : null;
-			}
+		if (isValid && loggedinAccount.getRole() == AccountRole.MANAGER) {
+			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
+			menuItem = serviceClient.get(menuItemId);
+			jspMsg = (menuItem == null)? serviceClient.getResponseMessage() : null;			
 		}
 		
 		if (jspMsg != null)

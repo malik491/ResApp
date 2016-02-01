@@ -130,7 +130,7 @@ public class BaseAction extends HttpServlet {
 		try {
 			String stringId = (String) request.getParameter(paramName);
 			id = Long.parseLong(stringId);
-		} catch (NumberFormatException e) {
+		} catch (NumberFormatException | NullPointerException e) {
 			
 		}
 		return id;

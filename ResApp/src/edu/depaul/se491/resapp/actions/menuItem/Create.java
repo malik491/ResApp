@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.enums.AccountRole;
-import edu.depaul.se491.enums.MenuItemCategory;
 import edu.depaul.se491.resapp.actions.BaseAction;
 import edu.depaul.se491.utils.ParamLabels;
 import edu.depaul.se491.ws.clients.MenuServiceClient;
@@ -47,7 +46,6 @@ public class Create extends BaseAction {
 					menuItem = serviceClient.post(menuItem);
 					jspMsg =(menuItem == null) ? serviceClient.getResponseMessage() : "Successfully created new menu item";
 				}
-			
 		}
 		
 		if (jspMsg != null)

@@ -34,6 +34,7 @@
 		String name = menuItem.getName();
 		String description = menuItem.getDescription();
 		String price = String.format("&#36;%.2f", menuItem.getPrice()); //&#36; html for $
+		String category = menuItem.getItemCategory().name().toLowerCase();
 %>
 
 		<table>
@@ -43,16 +44,11 @@
 				<tr> <td> Item Name </td> <td> <%=name %> </td></tr>
 				<tr> <td> Description </td> <td> <%=description %> </td></tr>
 				<tr> <td> Unit Price</td> <td> <%=price%> </td></tr>
+				<tr> <td> Category </td> <td> <%=category%> </td></tr>
 			</tbody>
 		</table>
-
-
-
-
-<%		}
-	
+<%		}	
 %>	
-	
 	</div>
 </body>
 </html>

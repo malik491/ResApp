@@ -9,21 +9,16 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.enums.AccountRole;
-import edu.depaul.se491.enums.MenuItemCategory;
 import edu.depaul.se491.resapp.actions.BaseAction;
 import edu.depaul.se491.utils.ParamLabels;
-import edu.depaul.se491.utils.ParamValues;
 import edu.depaul.se491.validators.MenuItemValidator;
-import edu.depaul.se491.ws.clients.AccountServiceClient;
 import edu.depaul.se491.ws.clients.MenuServiceClient;
 
 /**
- * @author 
+ * @author Malik
  */
 @WebServlet("/menuItem/update")
 public class Update extends BaseAction {
@@ -40,31 +35,30 @@ public class Update extends BaseAction {
 
 		String jspMsg = null;
 
-		MenuItemBean updatedMenuItem = getMenuItemFromRequest(request);
+		MenuItemBean updatedMenuItem = null;
+		long menuItemId = getIdParam(request, ParamLabels.MenuItem.ID, 0);
 		
-		String menuItemIDPar = request.getParameter(ParamLabels.MenuItem.ID);
-		Long menuItemId = Long.parseLong(menuItemIDPar, 10);
-		
-		if (	loggedinAccount.getRole() == AccountRole.ADMIN || 
-				loggedinAccount.getRole() == AccountRole.MANAGER ||
-				loggedinAccount.getRole() == AccountRole.EMPLOYEE ) {
+		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
+			// validate menu item id
+			boolean isValid = new MenuItemValidator().validateId(menuItemId, false);
 			
+			if (isValid) {
+				// we have a valid id, so either update menu item or load a menu item to be updated 
 				MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
 				
-				if (isValidMenuItemBean(updatedMenuItem, false)) 
-				{	
+				updatedMenuItem = getMenuItemFromRequest(request);
+				
+				if (isValidMenuItemBean(updatedMenuItem, false)) {
+					// update menu item
 					Boolean updated = serviceClient.update(updatedMenuItem);
-					jspMsg = (updated == null)? serviceClient.getResponseMessage() : "Successfully updated menu item";
+					jspMsg = (updated == null)? serviceClient.getResponseMessage() : "Successfully updated menu item";					
 				} else {
 					// load menu item to update
 					updatedMenuItem = serviceClient.get(menuItemId);
-					jspMsg = (updatedMenuItem == null)? serviceClient.getResponseMessage() : null;
+					jspMsg = (updatedMenuItem == null)? serviceClient.getResponseMessage() : null;					
 				}
+			}
 			
-		}
-		else
-		{
-			jspMsg = "You dont have the right to update the menu item";
 		}
 
 		if (jspMsg != null)

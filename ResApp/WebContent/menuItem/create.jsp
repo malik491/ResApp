@@ -30,25 +30,35 @@
 	
 	MenuItemCategory[] categories = MenuItemCategory.values();
 	String  name = ParamPatterns.MenuItem.NAME;
-	String  description = ParamPatterns.MenuItem.DESCRIPTION;
-	//double priceMax = 999.99;
+	int descriptionMax = ParamLengths.MenuItem.MAX_DESC;
+	
+	double priceMin = ParamValues.MenuItem.MIN_PRICE;
+	double priceMax = ParamValues.MenuItem.MAX_PRICE;
 %>
 	<form id="addForm" action="${pageContext.request.contextPath}/menuItem/create" method="post">
-	<table>
-		<thead> <tr> <th> Menu Item </th> <th> </th> </tr> </thead>
-		<tbody>
-			<tr> <td> Item Name </td> <td> <input type="text" name="<%=ParamLabels.MenuItem.NAME%>" value="" pattern="<%=name%>" title="Item name" required> </td></tr>
-			<tr> <td> Description </td> <td><textarea name="<%=ParamLabels.MenuItem.DESC %>" form="addForm" pattern="<%=description%>" title="Description"required></textarea> </td></tr>
-			<tr> <td> Unit Price ($0.0 - $1000.00)</td> <td> &#36;<input type="number" min="<%=ParamValues.MenuItem.MIN_PRICE%> " max="<%=ParamValues.MenuItem.MAX_PRICE%>" step="0.50" name="<%=ParamLabels.MenuItem.PRICE %>" value="" required> </td></tr>
-			<tr> <td> Item Category </td> 
-			<td><select form="addForm" name="<%=ParamLabels.MenuItem.ITEM_CATEGORY%>" required>
-<%				for(MenuItemCategory category: categories) {
-%>				<option value="<%=category.name() %>" ><%=category.name() %> </option>
-<%						}
-%>					</select></td>	
-		</tbody>
-	</table>
-	<input type="submit" value="Create Menu Item">
+		<table>
+			<thead> <tr> <th> Menu Item </th> <th> </th> </tr> </thead>
+			<tbody>
+				<tr> <td> Item Name </td> <td> <input type="text" name="<%=ParamLabels.MenuItem.NAME%>" value="" pattern="<%=name%>" title="Item name" required> </td></tr>
+				<tr> <td> Description </td> 
+					 <td>
+						<textarea name="<%=ParamLabels.MenuItem.DESC %>" form="addForm" maxLength="<%=descriptionMax%>" required></textarea> 
+					 </td>
+				</tr>
+				<tr> <td> Unit Price ($<%=priceMin%> - $<%=priceMax%>)</td> 
+					 <td> &#36;<input type="number" min="<%=priceMin%> " max="<%=priceMax%>" step="0.50" name="<%=ParamLabels.MenuItem.PRICE%>" required> </td>
+				</tr>
+				<tr> <td> Item Category </td> 
+					 <td><select form="addForm" name="<%=ParamLabels.MenuItem.ITEM_CATEGORY%>" required>
+<%						 	for(MenuItemCategory category: categories) {
+%>								<option value="<%=category.name() %>" ><%=category.name().toLowerCase()%> </option>
+<%							}
+%>						 </select>
+					</td>
+				</tr>	
+			</tbody>
+		</table>
+		<input type="submit" value="Create Menu Item">
 	</form>
 	</div>
 </body>
