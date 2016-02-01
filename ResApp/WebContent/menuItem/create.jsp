@@ -46,7 +46,7 @@
 					 </td>
 				</tr>
 				<tr> <td> Unit Price ($<%=priceMin%> - $<%=priceMax%>)</td> 
-					 <td> &#36;<input type="number" min="<%=priceMin%> " max="<%=priceMax%>" step="0.50" name="<%=ParamLabels.MenuItem.PRICE%>" required> </td>
+					 <td> &#36;<input type="number" min="<%=priceMin%> " max="<%=priceMax%>" step="0.99" name="<%=ParamLabels.MenuItem.PRICE%>" required> </td>
 				</tr>
 				<tr> <td> Item Category </td> 
 					 <td><select form="addForm" name="<%=ParamLabels.MenuItem.ITEM_CATEGORY%>" required>

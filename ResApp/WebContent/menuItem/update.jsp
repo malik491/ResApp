@@ -54,10 +54,10 @@
 				</tr>
 				<tr> <td> Unit Price ($<%=priceMin%> - $<%=priceMax%>)</td> 
 					 <td> 
-					 	&#36;<input type="number" min="<%=priceMin%>" max="<%=priceMax%>" step="0.50" name="<%=ParamLabels.MenuItem.PRICE%>" value="<%= price %>" required> 
+					 	&#36;<input type="number" min="<%=priceMin%>" max="<%=priceMax%>" step="0.99" name="<%=ParamLabels.MenuItem.PRICE%>" value="<%= price %>" required> 
 					 </td>
 				</tr>
-				<tr>
+				<tr> <td> Item Category :</td>
 					<td><select form="updateForm" name="<%=ParamLabels.MenuItem.ITEM_CATEGORY%>" required>
 <%						for(MenuItemCategory mItemCat: mItemCats) {
 %>							<option value="<%=mItemCat.name()%>" <%if (mItemCat == mItemCatInput){%> selected="selected" <%}%>> <%=mItemCat.name().toLowerCase()%> </option>
