@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page import="edu.depaul.se491.utils.ParamLabels" %>
 
 <!DOCTYPE html>
 <html>
@@ -12,10 +13,17 @@
 	<div class="component">
 
 	
-	
-	
-	
-	
+	<h3> Delete Menu Item </h3>
+	<br>
+	<a href="${pageContext.request.contextPath}/home.jsp"> Home Page </a> 
+	<br>
+
+<%
+	String message = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
+	if (message != null) {
+%>		<h3> <%= message %> </h3>
+<%	}
+%>
 	
 	
 	
