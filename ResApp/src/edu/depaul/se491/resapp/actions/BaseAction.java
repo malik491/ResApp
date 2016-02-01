@@ -179,6 +179,8 @@ public class BaseAction extends HttpServlet {
 		}
 		return category;
 	}
+	
+	
 	/**
 	 * wrapper around exception.
 	 * @param request
@@ -190,7 +192,7 @@ public class BaseAction extends HttpServlet {
 		double value = defaultValue;
 		try {
 			value = Double.parseDouble((String) request.getParameter(paramName));
-		} catch (NumberFormatException e) {
+		} catch (NumberFormatException | NullPointerException e) {
 			
 		}
 		return value;
