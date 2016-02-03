@@ -39,8 +39,6 @@
 	String line1 = ParamPatterns.Address.LINE_1;
 	String city  = ParamPatterns.Address.CITY;
 	String zipcode = ParamPatterns.Address.ZIPCODE;
-	
-	AccountRole[] roles = new AccountRole[]{AccountRole.EMPLOYEE, AccountRole.VENDOR};
 	AddressState[] states = AddressState.values();
 %>
 
@@ -50,12 +48,7 @@
 			<tbody>
 				<tr> <td> Username </td> <td> <input type="text" name="<%=ParamLabels.Credentials.USERNAME%>" pattern="<%=username%>" title="account username" required> </td> </tr>
 				<tr> <td> Password </td> <td> <input type="text" name="<%=ParamLabels.Credentials.PASSWORD%>" pattern="<%=password%>" title="account password" required> </td> </tr>
-				<tr> <td> Role </td> 
-					 <td><select form="createForm" name="<%=ParamLabels.Account.ROLE%>" required>
-<%						for(AccountRole role: roles) {
-%>							<option value="<%=role.name()%>"> <%=role.name().toLowerCase()%> </option>
-<%						}
-%>					</select></td>				
+				<tr> <td> Role </td> <td> <%=AccountRole.EMPLOYEE.name().toLowerCase()%></td>				
 				</tr>	
 			
 				<tr> <td> User Information </td>  <td> </td> </tr>			
