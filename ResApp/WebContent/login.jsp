@@ -37,7 +37,7 @@
 		<thead> <tr> <th> Account Username </th> <th> Account Password </th> </tr> </thead>
 		<tbody>
 			<tr> <td> manager </td> <td> password </td> </tr>
-			<tr> <td> employee </td> <td> password </td> </tr>
+			<tr> <td> employee1 </td> <td> password </td> </tr>
 		</tbody>
 	</table>
 	</div>
