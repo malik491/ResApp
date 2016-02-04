@@ -37,7 +37,7 @@ public class View extends BaseAction {
 		
 		String jspMsg = null;
 
-		long menuItemId = getIdParam(request, ParamLabels.MenuItem.ID, 0);
+		long menuItemId = getIdFromRequest(request, ParamLabels.MenuItem.ID, 0);
 		boolean isValid = new MenuItemValidator().validateId(menuItemId, false);
 
 		MenuItemBean menuItem = null;

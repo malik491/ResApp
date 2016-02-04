@@ -37,7 +37,7 @@ public class Delete extends BaseAction {
 		
 		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
 
-			long menuItemID = getIdParam(request, ParamLabels.MenuItem.ID, 0); 
+			long menuItemID = getIdFromRequest(request, ParamLabels.MenuItem.ID, 0); 
 			if (menuItemID == 0)
 				jspMsg = "Invalid Menu Id.";
 			

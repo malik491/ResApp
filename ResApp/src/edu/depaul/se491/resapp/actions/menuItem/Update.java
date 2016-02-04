@@ -36,7 +36,7 @@ public class Update extends BaseAction {
 		String jspMsg = null;
 
 		MenuItemBean updatedMenuItem = null;
-		long menuItemId = getIdParam(request, ParamLabels.MenuItem.ID, 0);
+		long menuItemId = getIdFromRequest(request, ParamLabels.MenuItem.ID, 0);
 		
 		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
 			// validate menu item id

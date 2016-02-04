@@ -85,16 +85,16 @@ public class BaseAction extends HttpServlet {
 	protected OrderBean getOrderFromRequest(HttpServletRequest request) {
 		OrderBean order = new OrderBean();
 		
-		order.setId(getIdParam(request, ParamLabels.Order.ID, 0));
-		order.setType(getOrderTypeParam(request));
-		order.setStatus(getOrderStatusParam(request));
+		order.setId(getIdFromRequest(request, ParamLabels.Order.ID, 0));
+		order.setType(getOrderTypeFromRequest(request));
+		order.setStatus(getOrderStatusFromRequest(request));
 		order.setConfirmation((String) request.getParameter(ParamLabels.Order.CONFIRMATION));
 		order.setPayment(getPaymentFromRequest(request));
 		order.setItems(getOrderItemsFromRequest(request));
 		
 		// set address (if delivery order)
 		if (order.getType() != null && order.getType() == OrderType.DELIVERY)
-			order.setAddress(getAddressBean(request));
+			order.setAddress(getAddressFromRequest(request));
 		
 		// set order payment total
 		List<OrderItemBean> items = order.getItems();
@@ -117,7 +117,7 @@ public class BaseAction extends HttpServlet {
 	 * @return
 	 */
 	protected AccountBean getAccountFromRequest(HttpServletRequest request) {
-		return new AccountBean(getCredentialsBean(request), getUserBean(request), getAccountRoleParam(request));		
+		return new AccountBean(getCredentialsFromRequest(request), getUserFromRequest(request), getAccountRoleFromRequest(request));		
 	}
 	
 	/**
@@ -129,11 +129,11 @@ public class BaseAction extends HttpServlet {
 	protected MenuItemBean getMenuItemFromRequest(HttpServletRequest request) {
 		MenuItemBean menuItem = new MenuItemBean();
 		
-		menuItem.setId(getIdParam(request, ParamLabels.MenuItem.ID, 0));
+		menuItem.setId(getIdFromRequest(request, ParamLabels.MenuItem.ID, 0));
 		menuItem.setName((String) request.getParameter(ParamLabels.MenuItem.NAME));
 		menuItem.setDescription((String) request.getParameter(ParamLabels.MenuItem.DESC));
-		menuItem.setPrice(getDoubleParam(request, ParamLabels.MenuItem.PRICE, 0));
-		menuItem.setItemCategory(getCategoryParam(request));
+		menuItem.setPrice(getDoubleFromRequest(request, ParamLabels.MenuItem.PRICE, 0));
+		menuItem.setItemCategory(getCategoryFromRequest(request));
 		
 		return menuItem;
 	}
@@ -149,7 +149,7 @@ public class BaseAction extends HttpServlet {
 	 * @param defaultValue
 	 * @return
 	 */
-	protected long getIdParam(HttpServletRequest request, String paramName, long defaultValue) {
+	protected long getIdFromRequest(HttpServletRequest request, String paramName, long defaultValue) {
 		long id = defaultValue;
 		try {
 			String stringId = (String) request.getParameter(paramName);
@@ -170,10 +170,10 @@ public class BaseAction extends HttpServlet {
 		boolean isValid = false;
 		
 		isValid  = new OrderValidator().validate(order, isNewOrder);
-		isValid &= isValid? isValidPaymentBean(order.getPayment(), isNewOrder) : false;
+		isValid  = isValid? isValidPaymentBean(order.getPayment(), isNewOrder) : false;
 
-		if (isValid)
-			isValid &= order.getType() == OrderType.DELIVERY? isValidAddressBean(order.getAddress(), isNewOrder) : true;			
+		if (isValid && order.getType() == OrderType.DELIVERY)
+			isValid = isValidAddressBean(order.getAddress(), isNewOrder);			
 		
 		if (isValid) {
 			// validate each order item
@@ -282,8 +282,8 @@ public class BaseAction extends HttpServlet {
 	private PaymentBean getPaymentFromRequest(HttpServletRequest request) {
 		PaymentBean payment = new PaymentBean();
 		
-		payment.setId(getIdParam(request, ParamLabels.Payment.ID, 0));
-		payment.setType(getPaymentTypeParam(request));
+		payment.setId(getIdFromRequest(request, ParamLabels.Payment.ID, 0));
+		payment.setType(getPaymentTypeFromRequest(request));
 	
 		if (payment.getType() != null && payment.getType() == PaymentType.CREDIT_CARD) {
 			payment.setCreditCard(getCreditCardFromRequest(request));
@@ -303,8 +303,8 @@ public class BaseAction extends HttpServlet {
 		
 		creditCard.setCcNumber((String) request.getParameter(ParamLabels.CreditCard.CC_NUMBER));
 		creditCard.setCcHolderName((String) request.getParameter(ParamLabels.CreditCard.CC_HOLDER_NAME));
-		creditCard.setExpMonth(getIntParam(request, ParamLabels.CreditCard.CC_EXP_MONTH, 0));
-		creditCard.setExpYear(getIntParam(request, ParamLabels.CreditCard.CC_EXP_YEAR, 0));
+		creditCard.setExpMonth(getIntFromRequest(request, ParamLabels.CreditCard.CC_EXP_MONTH, 0));
+		creditCard.setExpYear(getIntFromRequest(request, ParamLabels.CreditCard.CC_EXP_YEAR, 0));
 		
 		return creditCard;
 	}
@@ -330,8 +330,8 @@ public class BaseAction extends HttpServlet {
 			String quantityParamName = String.format("%s-%d", ParamLabels.OrderItem.QUANTITY, mItemId);
 			String statusParamName = String.format("%s-%d", ParamLabels.OrderItem.STATUS, mItemId);
 			
-			int quantity = getIntParam(request, quantityParamName, 0);
-			OrderItemStatus status = getOrderItemStatusParam(request, statusParamName);
+			int quantity = getIntFromRequest(request, quantityParamName, 0);
+			OrderItemStatus status = getOrderItemStatusFromRequest(request, statusParamName);
 			if (quantity > 0) {
 				orderItems.add(new OrderItemBean(menuItem, quantity, status));
 			}	
@@ -345,7 +345,7 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private CredentialsBean getCredentialsBean(HttpServletRequest request) {
+	private CredentialsBean getCredentialsFromRequest(HttpServletRequest request) {
 		CredentialsBean credentials = new CredentialsBean();
 		
 		credentials.setUsername((String) request.getParameter(ParamLabels.Credentials.USERNAME));
@@ -359,15 +359,15 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private UserBean getUserBean(HttpServletRequest request) {
+	private UserBean getUserFromRequest(HttpServletRequest request) {
 		UserBean user = new UserBean();
 		
-		user.setId(getIdParam(request, ParamLabels.User.ID, 0));
+		user.setId(getIdFromRequest(request, ParamLabels.User.ID, 0));
 		user.setFirstName((String) request.getParameter(ParamLabels.User.F_NAME));
 		user.setLastName((String) request.getParameter(ParamLabels.User.L_NAME));
 		user.setEmail((String) request.getParameter(ParamLabels.User.EMAIL));
 		user.setPhone((String) request.getParameter(ParamLabels.User.PHONE));
-		user.setAddress(getAddressBean(request));
+		user.setAddress(getAddressFromRequest(request));
 		
 		return user;
 	}
@@ -377,14 +377,14 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private AddressBean getAddressBean(HttpServletRequest request) {
+	private AddressBean getAddressFromRequest(HttpServletRequest request) {
 		AddressBean address = new AddressBean();
 		
-		address.setId(getIdParam(request, ParamLabels.Address.ID, 0));
+		address.setId(getIdFromRequest(request, ParamLabels.Address.ID, 0));
 		address.setLine1((String) request.getParameter(ParamLabels.Address.LINE_1));
 		address.setLine2((String) request.getParameter(ParamLabels.Address.LINE_2));
 		address.setCity((String) request.getParameter(ParamLabels.Address.CITY));
-		address.setState(getAddressStateParam(request));
+		address.setState(getAddressStateFromRequest(request));
 		address.setZipcode((String) request.getParameter(ParamLabels.Address.ZIP_CODE));
 		
 		return address;
@@ -397,7 +397,7 @@ public class BaseAction extends HttpServlet {
 	 * @param defaultValue
 	 * @return
 	 */
-	private double getDoubleParam(HttpServletRequest request, String paramName, double defaultValue) {
+	private double getDoubleFromRequest(HttpServletRequest request, String paramName, double defaultValue) {
 		double value = defaultValue;
 		try {
 			value = Double.parseDouble((String) request.getParameter(paramName));
@@ -413,7 +413,7 @@ public class BaseAction extends HttpServlet {
 	 * @param defaultValue
 	 * @return
 	 */
-	private int getIntParam(HttpServletRequest request, String paramName, int defaultValue) {
+	private int getIntFromRequest(HttpServletRequest request, String paramName, int defaultValue) {
 		int value = defaultValue;
 		try {
 			value = Integer.parseInt((String) request.getParameter(paramName));
@@ -428,7 +428,7 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private AccountRole getAccountRoleParam(HttpServletRequest request) {
+	private AccountRole getAccountRoleFromRequest(HttpServletRequest request) {
 		AccountRole role = null;
 		try {
 			role = AccountRole.valueOf((String) request.getParameter(ParamLabels.Account.ROLE));
@@ -443,7 +443,7 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private AddressState getAddressStateParam(HttpServletRequest request) {
+	private AddressState getAddressStateFromRequest(HttpServletRequest request) {
 		AddressState state = null;
 		try {
 			state = AddressState.valueOf((String) request.getParameter(ParamLabels.Address.STATE));
@@ -458,7 +458,7 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private MenuItemCategory getCategoryParam(HttpServletRequest request) {
+	private MenuItemCategory getCategoryFromRequest(HttpServletRequest request) {
 		MenuItemCategory category = null;
 		try {
 			category = MenuItemCategory.valueOf((String) request.getParameter(ParamLabels.MenuItem.ITEM_CATEGORY));
@@ -472,7 +472,7 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private OrderStatus getOrderStatusParam(HttpServletRequest request) {
+	private OrderStatus getOrderStatusFromRequest(HttpServletRequest request) {
 		OrderStatus status = null;
 		try {
 			status = OrderStatus.valueOf((String) request.getParameter(ParamLabels.Order.STATUS));
@@ -487,7 +487,7 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private OrderType getOrderTypeParam(HttpServletRequest request) {
+	private OrderType getOrderTypeFromRequest(HttpServletRequest request) {
 		OrderType type = null;
 		try {
 			type = OrderType.valueOf((String) request.getParameter(ParamLabels.Order.TYPE));
@@ -502,7 +502,7 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private OrderItemStatus getOrderItemStatusParam(HttpServletRequest request, String paramName) {
+	private OrderItemStatus getOrderItemStatusFromRequest(HttpServletRequest request, String paramName) {
 		OrderItemStatus status = null;
 		try {
 			status = OrderItemStatus.valueOf((String) request.getParameter(paramName));
@@ -517,7 +517,7 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private PaymentType getPaymentTypeParam(HttpServletRequest request) {
+	private PaymentType getPaymentTypeFromRequest(HttpServletRequest request) {
 		PaymentType type = null;
 		try {
 			type = PaymentType.valueOf((String) request.getParameter(ParamLabels.Payment.TYPE));

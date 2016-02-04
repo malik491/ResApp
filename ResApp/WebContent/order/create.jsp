@@ -11,10 +11,6 @@
 	<div class="component">
 	
 	
-	
-	
-	
-	
 	</div>
 </body>
 </html>

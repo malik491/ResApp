@@ -48,19 +48,19 @@
 					
 					<td>
 						<form action="${pageContext.request.contextPath}/order/view" method="POST">
-						<input type="hidden" name="<%=ParamLabels.MenuItem.ID%>" value="<%=orderId%>">
+						<input type="hidden" name="<%=ParamLabels.Order.ID%>" value="<%=orderId%>">
 						<input type="submit" value="View">
 						</form>
 					</td>
 					<td>
 						<form action="${pageContext.request.contextPath}/order/update" method="POST">
-						<input type="hidden" name="<%=ParamLabels.MenuItem.ID%>" value="<%=orderId%>">
+						<input type="hidden" name="<%=ParamLabels.Order.ID%>" value="<%=orderId%>">
 						<input type="submit" value="Update">
 						</form>
 					</td>
 					<td>
 						<form action="${pageContext.request.contextPath}/order/delete" method="POST">
-						<input type="hidden" name="<%=ParamLabels.MenuItem.ID%>" value="<%=orderId%>">
+						<input type="hidden" name="<%=ParamLabels.Order.ID%>" value="<%=orderId%>">
 						<input type="submit" value="Delete">
 						</form>
 					</td>								
