@@ -37,6 +37,9 @@
 				<li><a href="${pageContext.request.contextPath}/menuItem/manage"> Manage Menu Items </a></li>
 				<li><a href="${pageContext.request.contextPath}/menuItem/create"> Create Menu Items </a></li>
 				<li> </li>	
+				<li><a href="${pageContext.request.contextPath}/order/manage"> Manage Orders </a></li>
+				<li><a href="${pageContext.request.contextPath}/order/create"> Create Order </a></li>
+				<li> </li>	
 				<li><a href="${pageContext.request.contextPath}/account/view"> View Your Account </a></li>
 				<li><a href="${pageContext.request.contextPath}/account/update"> Update Your Account </a></li>
 
