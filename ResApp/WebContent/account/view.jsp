@@ -13,7 +13,7 @@
 	</head>
 <body>
 	<div class="component">
-	<h3> Account Information </h3>
+	<h3> Account </h3>
 	
 	<a href="${pageContext.request.contextPath}/home.jsp"> Home Page </a> <br> <br>
 
@@ -29,12 +29,13 @@
 		UserBean user = account.getUser();
 		AddressBean address = user.getAddress();
 		
-		String line2 = address.getLine2() == null? "" : address.getLine2();
-		String formatedAddr = String.format("%s,<br> %s.<br> %s, %s %s", 
+		String line2 = address.getLine2() == null? "" : address.getLine2() + "<br>";
+		String formatedAddr = String.format("%s<br>%s%s, %s %s",
 				address.getLine1(), line2, address.getCity(), address.getState().toString(), address.getZipcode());
 %>
+		<h3>Account Information</h3>
 		<table>
-			<thead> <tr> <th> Account </th> <th> </th> </tr> </thead>
+			<thead> <tr> <th> Field </th> <th> Value </th> </tr> </thead>
 			<tbody>
 				<tr> <td> Username </td> <td> <%= credentials.getUsername() %></td></tr>
 				<tr> <td> Password </td> <td> <%= credentials.getPassword() %> </td></tr>
@@ -42,8 +43,9 @@
 			</tbody>
 		</table>
 		
+		<h3>User Information</h3>
 		<table>
-			<thead> <tr> <th> User </th> <th> </th> </tr> </thead>
+			<thead> <tr> <th> Field </th> <th> Value </th> </tr> </thead>
 			<tbody>				
 				<tr> <td> First Name </td> <td> <%= user.getFirstName() %></td></tr>
 				<tr> <td> Last Name </td> <td> <%= user.getLastName() %> </td></tr>
@@ -52,9 +54,8 @@
 				<tr> <td> Address </td> <td> <%= formatedAddr %> </td> </tr>
 			</tbody>
 		</table>
-<%	}
+<%	} 
 %>	
-	
 	</div>
 </body>
 </html>

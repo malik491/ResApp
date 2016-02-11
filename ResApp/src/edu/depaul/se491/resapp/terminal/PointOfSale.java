@@ -1,4 +1,7 @@
-package edu.depaul.se491.resapp.actions.order;
+/**
+ * 
+ */
+package edu.depaul.se491.resapp.terminal;
 
 import java.io.IOException;
 
@@ -7,22 +10,22 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import edu.depaul.se491.beans.AccountBean;
+import edu.depaul.se491.beans.MenuItemBean;
 import edu.depaul.se491.enums.AccountRole;
 import edu.depaul.se491.resapp.actions.BaseAction;
 import edu.depaul.se491.utils.ParamLabels;
-import edu.depaul.se491.validators.OrderValidator;
-import edu.depaul.se491.ws.clients.OrderServiceClient;
+import edu.depaul.se491.ws.clients.MenuServiceClient;
 
 /**
- * 
  * @author Malik
  *
  */
-@WebServlet("/order/delete")
-public class Delete extends BaseAction {
-	
-	private static final long serialVersionUID = 1L; // ignore this
+@WebServlet("/terminal/pos")
+public class PointOfSale extends BaseAction {
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -34,25 +37,22 @@ public class Delete extends BaseAction {
 		}
 		
 		String jspMsg = null;
-
-		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
-			long OrderID = getIdFromRequest(request, ParamLabels.Order.ID, 0); 
-			boolean isValid = new OrderValidator().validateId(new Long(OrderID), false);
-			
-			if(isValid) {
-				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
-				Boolean deleted = serviceClient.delete(OrderID);
-				jspMsg =(deleted == null) ? serviceClient.getResponseMessage() : (deleted ? "Successfully deleted the order." : "Failed to delete the order") ;
-			} else {
-				jspMsg = "Invalid Order Id.";
-			}
+		MenuItemBean[] menuItems = null;
+		if (loggedinAccount.getRole() == AccountRole.EMPLOYEE) {
+			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
+			menuItems = serviceClient.getAll();
+			jspMsg = (menuItems == null)? serviceClient.getResponseMessage() : null;	
 		}
-	
+		
 		if (jspMsg != null)
 			request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
-
-		String jspUrl = "/order/delete.jsp";
+		if (menuItems != null) {
+			request.setAttribute(ParamLabels.MenuItem.MENU_ITEM_BEAN_LIST, menuItems);
+			request.setAttribute("jsonMenuItemList", new Gson().toJson(menuItems));
+		}
+		
+		String jspUrl = "/terminal/pos.jsp";
 		getServletContext().getRequestDispatcher(jspUrl).forward(request, response);
 	}
-	
+
 }

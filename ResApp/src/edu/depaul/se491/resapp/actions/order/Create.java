@@ -5,9 +5,6 @@ package edu.depaul.se491.resapp.actions.order;
 
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +25,8 @@ import edu.depaul.se491.ws.clients.OrderServiceClient;
  */
 @WebServlet("/order/create")
 public class Create extends BaseAction {
-	
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		AccountBean loggedinAccount = getLoggedinAccount(request);
@@ -37,39 +35,42 @@ public class Create extends BaseAction {
 			getServletContext().getRequestDispatcher(LOGIN_JSP_URL).forward(request, response);
 			return;
 		}
-		String jspMsg = null;
-		List<MenuItemBean> menuItems = null;
-		OrderBean order = null;
 		
-
+		String jspMsg = null;
+		MenuItemBean[] menuItems = null;
 		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
 			
 			//get the menu items.			
 			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
-			menuItems = Arrays.asList(serviceClient.getAll()) ;
+			menuItems = serviceClient.getAll() ;
 			jspMsg =(menuItems == null) ? serviceClient.getResponseMessage() : null;
 			
 			if(menuItems != null)
 			{	
-				//create an order
-				order = getOrderFromRequest(request);
-				boolean isValid = isValidOrderBean(order, true);
-				if(isValid)
-				{
-					//add the order
-					OrderServiceClient orderServiceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
-					order = orderServiceClient.post(order);
-					isValid &= isValidOrderBean(order, true);
-					jspMsg =(order == null) ? orderServiceClient.getResponseMessage() : (isValid) ? "The order was successfully created" : "The order was successfully created"  ;
-				}
-			
+				long orderId = getIdFromRequest(request, ParamLabels.Order.ID, -1);
+				
+				if (orderId != -1) {
+					//create an order
+					OrderBean order = getOrderFromRequest(request);
+					if(isValidOrderBean(order, true)){
+						//add the order
+						OrderServiceClient orderServiceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+						OrderBean createdOrder = orderServiceClient.post(order);
+						jspMsg =(createdOrder == null) ? orderServiceClient.getResponseMessage() : "Successfully Created Order";
+					} else {
+						jspMsg = "Invalid order data";
+					}
+
+				}			
 			}
 
 		}
+
+		if (jspMsg != null)
+			request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
+		if (menuItems != null)
+			request.setAttribute(ParamLabels.MenuItem.MENU_ITEM_BEAN_LIST, menuItems);
 		
-		
-		request.setAttribute(ParamLabels.MenuItem.MENU_ITEM_BEAN_LIST, menuItems != null? menuItems: null);
-		request.setAttribute("msg", jspMsg != null? jspMsg : null);
 		String jspURL = "/order/create.jsp";
 		getServletContext().getRequestDispatcher(jspURL).forward(request, response);
 	}

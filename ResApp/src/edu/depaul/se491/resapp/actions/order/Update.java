@@ -4,7 +4,6 @@
 package edu.depaul.se491.resapp.actions.order;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.OrderBean;
-import edu.depaul.se491.beans.OrderItemBean;
 import edu.depaul.se491.enums.AccountRole;
 import edu.depaul.se491.resapp.actions.BaseAction;
 import edu.depaul.se491.utils.ParamLabels;
@@ -37,36 +35,29 @@ public class Update extends BaseAction {
 		}
 
 		String jspMsg = null;
-
 		OrderBean updateOrderbean = null;
-		long orderItemId = getIdFromRequest(request, ParamLabels.Order.ID, 0);
 		
-		System.out.println(orderItemId);
-
 		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
-			// validate menu item id
-			boolean isValid = new OrderValidator().validateId(orderItemId, false);
+			// validate order id
+			long orderId = getIdFromRequest(request, ParamLabels.Order.ID, 0);
+			boolean isValid = new OrderValidator().validateId(orderId, false);
 			
 			if (isValid) {
-				// we have a valid id, so either update menu item or load a menu item to be updated 
+				// we have a valid id, so either update order or load order to be updated 
 				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+
 				updateOrderbean = getOrderFromRequest(request); 
-				//updatedMenuItem = getMenuItemFromRequest(request);
-				
-				System.out.println(updateOrderbean.getId());
-				
-				
 				if (isValidOrderBean(updateOrderbean, false)) {
 					// update order
-					System.out.println("Second Time");
 					Boolean updated = serviceClient.update(updateOrderbean);
-					jspMsg = (updated == null)? serviceClient.getResponseMessage() : "Successfully updated order";					
-				} else {
-					System.out.println("First Time");
-					// load menu item to update
-					updateOrderbean = serviceClient.get(orderItemId);
-					jspMsg = (updateOrderbean == null)? serviceClient.getResponseMessage() : null;					
+					jspMsg = (updated == null)? serviceClient.getResponseMessage() : updated? "Successfully updated order" : "Failed to update order";
 				}
+				// load order data
+				updateOrderbean = serviceClient.get(orderId);
+				jspMsg = (updateOrderbean == null)? (serviceClient.getResponseMessage() + jspMsg != null? " " + jspMsg : "") : jspMsg;					
+			
+			} else {
+				jspMsg = "Invalid Order Id";
 			}
 		}
 
@@ -76,7 +67,7 @@ public class Update extends BaseAction {
 			request.setAttribute(ParamLabels.Order.ORDER_BEAN, updateOrderbean);
 		
 		String jspUrl = "/order/update.jsp";
-		getServletContext().getRequestDispatcher(jspUrl).forward(request, response);
+		getServletContext().getRequestDispatcher(jspUrl).forward(request, response);	
 	}	
 
 }

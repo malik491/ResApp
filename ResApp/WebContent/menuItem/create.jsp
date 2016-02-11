@@ -23,10 +23,8 @@
 	String jspMsg = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 
 	if (jspMsg != null) {
-%>
-		<h4> <%= jspMsg %>	</h4>				
-<%		
-	}
+%>		<h3> <%= jspMsg %>	</h3>				
+<%	}
 	
 	MenuItemCategory[] categories = MenuItemCategory.values();
 	String  name = ParamPatterns.MenuItem.NAME;
@@ -36,20 +34,28 @@
 	double priceMax = ParamValues.MenuItem.MAX_PRICE;
 %>
 	<form id="addForm" action="${pageContext.request.contextPath}/menuItem/create" method="post">
+		<h3>Menu Item </h3>
 		<table>
-			<thead> <tr> <th> Menu Item </th> <th> </th> </tr> </thead>
+			<thead> <tr> <th> Field </th> <th> Value </th></tr> </thead>
 			<tbody>
-				<tr> <td> Item Name </td> <td> <input type="text" name="<%=ParamLabels.MenuItem.NAME%>" value="" pattern="<%=name%>" title="Item name" required> </td></tr>
+				<tr> <td> Item Name </td> 
+					 <td> <input type="text" name="<%=ParamLabels.MenuItem.NAME%>" pattern="<%=name%>" 
+					 		title="length <%=ParamLengths.MenuItem.MIN_NAME%>-<%=ParamLengths.MenuItem.MAX_NAME%>" required="required">
+					 </td>
+				</tr>
 				<tr> <td> Description </td> 
 					 <td>
-						<textarea name="<%=ParamLabels.MenuItem.DESC %>" form="addForm" maxLength="<%=descriptionMax%>" required></textarea> 
+						<textarea form="addForm" name="<%=ParamLabels.MenuItem.DESC%>"
+							rows="10" cols="50" maxLength="<%=ParamLengths.MenuItem.MAX_DESC%>" required="required"></textarea> 
 					 </td>
 				</tr>
 				<tr> <td> Unit Price ($<%=priceMin%> - $<%=priceMax%>)</td> 
-					 <td> &#36;<input type="number" min="<%=priceMin%> " max="<%=priceMax%>" step="0.99" name="<%=ParamLabels.MenuItem.PRICE%>" required> </td>
+					 <td> &#36;<input type="number" min="<%=priceMin%>" max="<%=priceMax%>" step="any" name="<%=ParamLabels.MenuItem.PRICE%>" 
+					 		value="0" required="required">
+					 </td>
 				</tr>
 				<tr> <td> Item Category </td> 
-					 <td><select form="addForm" name="<%=ParamLabels.MenuItem.ITEM_CATEGORY%>" required>
+					 <td><select form="addForm" name="<%=ParamLabels.MenuItem.ITEM_CATEGORY%>" required="required">
 <%						 	for(MenuItemCategory category: categories) {
 %>								<option value="<%=category.name() %>" ><%=category.name().toLowerCase()%> </option>
 <%							}
@@ -60,19 +66,6 @@
 		</table>
 		<input type="submit" value="Create Menu Item">
 	</form>
-	</div>
-</body>
-</html>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	</div>
 </body>
 </html>

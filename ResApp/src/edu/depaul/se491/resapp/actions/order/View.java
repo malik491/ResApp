@@ -24,7 +24,6 @@ import edu.depaul.se491.ws.clients.OrderServiceClient;
  */
 @WebServlet("/order/view")
 public class View extends BaseAction {
-
 	private static final long serialVersionUID = 1L; // ignore this
 	
 	@Override
@@ -37,23 +36,25 @@ public class View extends BaseAction {
 		}
 		
 		String jspMsg = null;
+		OrderBean order = null;
 
-		final long orderItemId = getIdFromRequest(request, ParamLabels.Order.ID, 0);
-		boolean isValid = new OrderValidator().validateId(orderItemId, false);
+		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
+			long orderId = getIdFromRequest(request, ParamLabels.Order.ID, 0);
+			boolean isValid = new OrderValidator().validateId(orderId, false);
 
-		//OrderItemBean orderItem = null;
-		OrderBean orderbean = null;
-		
-		if (isValid && loggedinAccount.getRole() == AccountRole.MANAGER) {
-			OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
-			orderbean = serviceClient.get(orderItemId);
-			jspMsg = (orderbean == null)? serviceClient.getResponseMessage() : null;			
+			if (isValid) {
+				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+				order = serviceClient.get(orderId);
+				jspMsg = (order == null)? serviceClient.getResponseMessage() : null;			
+			} else {
+				jspMsg = "Invalid Order Id";
+			}
 		}
 		
 		if (jspMsg != null)
 			request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
-		if (orderbean != null)
-			request.setAttribute(ParamLabels.Order.ORDER_BEAN, orderbean); //not sure here
+		if (order != null)
+			request.setAttribute(ParamLabels.Order.ORDER_BEAN, order);
 		
 		String jspUrl = "/order/view.jsp";
 		getServletContext().getRequestDispatcher(jspUrl).forward(request, response);

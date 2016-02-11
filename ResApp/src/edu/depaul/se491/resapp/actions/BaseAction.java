@@ -88,16 +88,19 @@ public class BaseAction extends HttpServlet {
 		order.setId(getIdFromRequest(request, ParamLabels.Order.ID, 0));
 		order.setType(getOrderTypeFromRequest(request));
 		order.setStatus(getOrderStatusFromRequest(request));
-		order.setConfirmation((String) request.getParameter(ParamLabels.Order.CONFIRMATION));
+		order.setConfirmation(request.getParameter(ParamLabels.Order.CONFIRMATION));
 		order.setPayment(getPaymentFromRequest(request));
-		order.setItems(getOrderItemsFromRequest(request));
+		if (order.getId() == 0)
+			order.setOrderItems(getOrderItemsFromRequest(request, true));
+		else
+			order.setOrderItems(getOrderItemsFromRequest(request, false));
 		
 		// set address (if delivery order)
 		if (order.getType() != null && order.getType() == OrderType.DELIVERY)
 			order.setAddress(getAddressFromRequest(request));
 		
 		// set order payment total
-		List<OrderItemBean> items = order.getItems();
+		OrderItemBean[] items = order.getOrderItems();
 		PaymentBean payment = order.getPayment();
 		if (items != null && payment != null) {
 			double total = 0;
@@ -130,8 +133,8 @@ public class BaseAction extends HttpServlet {
 		MenuItemBean menuItem = new MenuItemBean();
 		
 		menuItem.setId(getIdFromRequest(request, ParamLabels.MenuItem.ID, 0));
-		menuItem.setName((String) request.getParameter(ParamLabels.MenuItem.NAME));
-		menuItem.setDescription((String) request.getParameter(ParamLabels.MenuItem.DESC));
+		menuItem.setName(request.getParameter(ParamLabels.MenuItem.NAME));
+		menuItem.setDescription(request.getParameter(ParamLabels.MenuItem.DESC));
 		menuItem.setPrice(getDoubleFromRequest(request, ParamLabels.MenuItem.PRICE, 0));
 		menuItem.setItemCategory(getCategoryFromRequest(request));
 		
@@ -152,7 +155,7 @@ public class BaseAction extends HttpServlet {
 	protected long getIdFromRequest(HttpServletRequest request, String paramName, long defaultValue) {
 		long id = defaultValue;
 		try {
-			String stringId = (String) request.getParameter(paramName);
+			String stringId = request.getParameter(paramName);
 			id = Long.parseLong(stringId);
 		} catch (NumberFormatException | NullPointerException e) {
 			
@@ -172,12 +175,14 @@ public class BaseAction extends HttpServlet {
 		isValid  = new OrderValidator().validate(order, isNewOrder);
 		isValid  = isValid? isValidPaymentBean(order.getPayment(), isNewOrder) : false;
 
-		if (isValid && order.getType() == OrderType.DELIVERY)
-			isValid = isValidAddressBean(order.getAddress(), isNewOrder);			
+		if (isValid && order.getType() == OrderType.DELIVERY) {
+			boolean isNewAddress = order.getAddress().getId() == 0;
+			isValid = isValidAddressBean(order.getAddress(), isNewAddress);			
+		}
 		
 		if (isValid) {
 			// validate each order item
-			for(OrderItemBean oItem: order.getItems()) {
+			for(OrderItemBean oItem: order.getOrderItems()) {
 				isValid &= isValidOrderItemBean(oItem);
 			}
 		}
@@ -287,7 +292,7 @@ public class BaseAction extends HttpServlet {
 	
 		if (payment.getType() != null && payment.getType() == PaymentType.CREDIT_CARD) {
 			payment.setCreditCard(getCreditCardFromRequest(request));
-			payment.setTransactionConfirmation((String) request.getParameter(ParamLabels.Payment.CC_TRANSACTION_CONFIRMATION));
+			payment.setTransactionConfirmation(request.getParameter(ParamLabels.Payment.CC_TRANSACTION_CONFIRMATION));
 		}
 		
 		return payment;
@@ -301,10 +306,10 @@ public class BaseAction extends HttpServlet {
 	private CreditCardBean getCreditCardFromRequest(HttpServletRequest request) {
 		CreditCardBean creditCard = new CreditCardBean();
 		
-		creditCard.setCcNumber((String) request.getParameter(ParamLabels.CreditCard.CC_NUMBER));
-		creditCard.setCcHolderName((String) request.getParameter(ParamLabels.CreditCard.CC_HOLDER_NAME));
-		creditCard.setExpMonth(getIntFromRequest(request, ParamLabels.CreditCard.CC_EXP_MONTH, 0));
-		creditCard.setExpYear(getIntFromRequest(request, ParamLabels.CreditCard.CC_EXP_YEAR, 0));
+		creditCard.setCcNumber(request.getParameter(ParamLabels.CreditCard.NUMBER));
+		creditCard.setCcHolderName(request.getParameter(ParamLabels.CreditCard.HOLDER_NAME));
+		creditCard.setExpMonth(getIntFromRequest(request, ParamLabels.CreditCard.EXP_MONTH, 0));
+		creditCard.setExpYear(getIntFromRequest(request, ParamLabels.CreditCard.EXP_YEAR, 0));
 		
 		return creditCard;
 	}
@@ -314,7 +319,7 @@ public class BaseAction extends HttpServlet {
 	 * @param request
 	 * @return
 	 */
-	private List<OrderItemBean> getOrderItemsFromRequest(HttpServletRequest request) {
+	private OrderItemBean[] getOrderItemsFromRequest(HttpServletRequest request, boolean isNewOrder) {
 		AccountBean loggedinAccount = getLoggedinAccount(request);
 		if (loggedinAccount == null)
 			return null;
@@ -332,12 +337,15 @@ public class BaseAction extends HttpServlet {
 			
 			int quantity = getIntFromRequest(request, quantityParamName, 0);
 			OrderItemStatus status = getOrderItemStatusFromRequest(request, statusParamName);
-			if (quantity > 0) {
-				orderItems.add(new OrderItemBean(menuItem, quantity, status));
-			}	
+			if (status != null) {
+				boolean addToOrder = isNewOrder? (quantity > 0) : true;
+				if (addToOrder) {
+					orderItems.add(new OrderItemBean(menuItem, quantity, status));
+				}					
+			}
 		}
 		
-		return orderItems;
+		return orderItems.toArray(new OrderItemBean[orderItems.size()]);
 	}
 	
 	/**
@@ -348,8 +356,8 @@ public class BaseAction extends HttpServlet {
 	private CredentialsBean getCredentialsFromRequest(HttpServletRequest request) {
 		CredentialsBean credentials = new CredentialsBean();
 		
-		credentials.setUsername((String) request.getParameter(ParamLabels.Credentials.USERNAME));
-		credentials.setPassword((String) request.getParameter(ParamLabels.Credentials.PASSWORD));
+		credentials.setUsername(request.getParameter(ParamLabels.Credentials.USERNAME));
+		credentials.setPassword(request.getParameter(ParamLabels.Credentials.PASSWORD));
 		
 		return credentials;
 	}
@@ -363,10 +371,10 @@ public class BaseAction extends HttpServlet {
 		UserBean user = new UserBean();
 		
 		user.setId(getIdFromRequest(request, ParamLabels.User.ID, 0));
-		user.setFirstName((String) request.getParameter(ParamLabels.User.F_NAME));
-		user.setLastName((String) request.getParameter(ParamLabels.User.L_NAME));
-		user.setEmail((String) request.getParameter(ParamLabels.User.EMAIL));
-		user.setPhone((String) request.getParameter(ParamLabels.User.PHONE));
+		user.setFirstName(request.getParameter(ParamLabels.User.F_NAME));
+		user.setLastName(request.getParameter(ParamLabels.User.L_NAME));
+		user.setEmail(request.getParameter(ParamLabels.User.EMAIL));
+		user.setPhone(request.getParameter(ParamLabels.User.PHONE));
 		user.setAddress(getAddressFromRequest(request));
 		
 		return user;
@@ -381,11 +389,14 @@ public class BaseAction extends HttpServlet {
 		AddressBean address = new AddressBean();
 		
 		address.setId(getIdFromRequest(request, ParamLabels.Address.ID, 0));
-		address.setLine1((String) request.getParameter(ParamLabels.Address.LINE_1));
-		address.setLine2((String) request.getParameter(ParamLabels.Address.LINE_2));
-		address.setCity((String) request.getParameter(ParamLabels.Address.CITY));
+		address.setLine1(request.getParameter(ParamLabels.Address.LINE_1));
+		address.setLine2(request.getParameter(ParamLabels.Address.LINE_2));
+		address.setCity(request.getParameter(ParamLabels.Address.CITY));
 		address.setState(getAddressStateFromRequest(request));
-		address.setZipcode((String) request.getParameter(ParamLabels.Address.ZIP_CODE));
+		address.setZipcode(request.getParameter(ParamLabels.Address.ZIP_CODE));
+		
+		if (address.getLine2() != null && address.getLine2().length() == 0)
+			address.setLine2(null);
 		
 		return address;
 	}
@@ -400,7 +411,7 @@ public class BaseAction extends HttpServlet {
 	private double getDoubleFromRequest(HttpServletRequest request, String paramName, double defaultValue) {
 		double value = defaultValue;
 		try {
-			value = Double.parseDouble((String) request.getParameter(paramName));
+			value = Double.parseDouble(request.getParameter(paramName));
 		} catch (Exception e) {	
 		}
 		return value;
@@ -416,7 +427,7 @@ public class BaseAction extends HttpServlet {
 	private int getIntFromRequest(HttpServletRequest request, String paramName, int defaultValue) {
 		int value = defaultValue;
 		try {
-			value = Integer.parseInt((String) request.getParameter(paramName));
+			value = Integer.parseInt(request.getParameter(paramName));
 		} catch (Exception e) {
 			
 		}
@@ -431,7 +442,7 @@ public class BaseAction extends HttpServlet {
 	private AccountRole getAccountRoleFromRequest(HttpServletRequest request) {
 		AccountRole role = null;
 		try {
-			role = AccountRole.valueOf((String) request.getParameter(ParamLabels.Account.ROLE));
+			role = AccountRole.valueOf(request.getParameter(ParamLabels.Account.ROLE));
 		} catch (Exception e){
 			
 		}
@@ -446,7 +457,7 @@ public class BaseAction extends HttpServlet {
 	private AddressState getAddressStateFromRequest(HttpServletRequest request) {
 		AddressState state = null;
 		try {
-			state = AddressState.valueOf((String) request.getParameter(ParamLabels.Address.STATE));
+			state = AddressState.valueOf(request.getParameter(ParamLabels.Address.STATE));
 		} catch (Exception e){
 			
 		}
@@ -461,7 +472,7 @@ public class BaseAction extends HttpServlet {
 	private MenuItemCategory getCategoryFromRequest(HttpServletRequest request) {
 		MenuItemCategory category = null;
 		try {
-			category = MenuItemCategory.valueOf((String) request.getParameter(ParamLabels.MenuItem.ITEM_CATEGORY));
+			category = MenuItemCategory.valueOf(request.getParameter(ParamLabels.MenuItem.ITEM_CATEGORY));
 		} catch (Exception e) {
 		}
 		return category;
@@ -475,7 +486,7 @@ public class BaseAction extends HttpServlet {
 	private OrderStatus getOrderStatusFromRequest(HttpServletRequest request) {
 		OrderStatus status = null;
 		try {
-			status = OrderStatus.valueOf((String) request.getParameter(ParamLabels.Order.STATUS));
+			status = OrderStatus.valueOf(request.getParameter(ParamLabels.Order.STATUS));
 		} catch (Exception e) {
 		}
 		
@@ -490,7 +501,7 @@ public class BaseAction extends HttpServlet {
 	private OrderType getOrderTypeFromRequest(HttpServletRequest request) {
 		OrderType type = null;
 		try {
-			type = OrderType.valueOf((String) request.getParameter(ParamLabels.Order.TYPE));
+			type = OrderType.valueOf(request.getParameter(ParamLabels.Order.TYPE));
 		} catch (Exception e) {
 		}
 		
@@ -505,7 +516,7 @@ public class BaseAction extends HttpServlet {
 	private OrderItemStatus getOrderItemStatusFromRequest(HttpServletRequest request, String paramName) {
 		OrderItemStatus status = null;
 		try {
-			status = OrderItemStatus.valueOf((String) request.getParameter(paramName));
+			status = OrderItemStatus.valueOf(request.getParameter(paramName));
 		} catch (Exception e) {
 		}
 		
@@ -520,7 +531,7 @@ public class BaseAction extends HttpServlet {
 	private PaymentType getPaymentTypeFromRequest(HttpServletRequest request) {
 		PaymentType type = null;
 		try {
-			type = PaymentType.valueOf((String) request.getParameter(ParamLabels.Payment.TYPE));
+			type = PaymentType.valueOf(request.getParameter(ParamLabels.Payment.TYPE));
 		} catch (Exception e) {
 		}
 		

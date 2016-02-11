@@ -29,7 +29,7 @@
 	if (menuItem != null) {
 		long id = menuItem.getId();
 		String name = menuItem.getName();
-		String description = menuItem.getDescription();
+		String description = menuItem.getDescription().trim();
 		String price = String.format("%.2f", menuItem.getPrice()); //&#36; html for $
 		
 		MenuItemCategory mItemCatInput = menuItem.getItemCategory();
@@ -41,24 +41,33 @@
 		double priceMin = ParamValues.MenuItem.MIN_PRICE;
 		double priceMax = ParamValues.MenuItem.MAX_PRICE;
 %>
+		<h3>Menu Item</h3>
 		<form id="updateForm" action="${pageContext.request.contextPath}/menuItem/update" method="POST">
+		<input type="hidden" name="<%=ParamLabels.MenuItem.ID%>" value="<%= id %>">
+		
 		<table>
-			<thead> <tr> <th> Menu Item </th> <th> <input type="hidden" name="<%=ParamLabels.MenuItem.ID%>" value="<%= id %>"> </th> </tr> </thead>
+			<thead> <tr> <th> Field </th> <th> Value </th> </tr> </thead>
 			<tbody>
 				<tr> <td> ID </td> <td> <%=id%></td></tr>
-				<tr> <td> Item Name </td> <td> <input type="text" name="<%=ParamLabels.MenuItem.NAME%>" value="<%= name %>" pattern="<%=namePattern%>" title="menu item name" required> </td></tr>
+				<tr> <td> Item Name </td> 
+					<td> <input type="text" name="<%=ParamLabels.MenuItem.NAME%>" value="<%=name%>" pattern="<%=namePattern%>" 
+							title="length <%=ParamLengths.MenuItem.MIN_NAME%>-<%=ParamLengths.MenuItem.MAX_NAME%>" required="required"> 
+					</td>
+				</tr>
 				<tr> <td> Description </td> 
 					 <td> 
-					 	<textarea name="<%=ParamLabels.MenuItem.DESC%>" form="updateForm" maxLength="<%=descriptionMax%>" required> <%= description %> </textarea> 
+					 	<textarea name="<%=ParamLabels.MenuItem.DESC%>" form="updateForm"
+					 		rows="10" cols="50" maxLength="<%=descriptionMax%>" required="required"><%=description%></textarea> 
 					 </td>
 				</tr>
 				<tr> <td> Unit Price ($<%=priceMin%> - $<%=priceMax%>)</td> 
 					 <td> 
-					 	&#36;<input type="number" min="<%=priceMin%>" max="<%=priceMax%>" step="0.99" name="<%=ParamLabels.MenuItem.PRICE%>" value="<%= price %>" required> 
+					 	&#36;<input type="number" min="<%=priceMin%>" max="<%=priceMax%>" step="any" name="<%=ParamLabels.MenuItem.PRICE%>" 
+					 	value="<%=price%>" required="required">
 					 </td>
 				</tr>
-				<tr> <td> Item Category :</td>
-					<td><select form="updateForm" name="<%=ParamLabels.MenuItem.ITEM_CATEGORY%>" required>
+				<tr> <td> Item Category </td>
+					<td><select form="updateForm" name="<%=ParamLabels.MenuItem.ITEM_CATEGORY%>" required="required">
 <%						for(MenuItemCategory mItemCat: mItemCats) {
 %>							<option value="<%=mItemCat.name()%>" <%if (mItemCat == mItemCatInput){%> selected="selected" <%}%>> <%=mItemCat.name().toLowerCase()%> </option>
 <%						}

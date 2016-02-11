@@ -32,7 +32,7 @@
 		} else {
 %>
 		<table>
-			<thead><tr><th> Item ID </th><th> Name </th> <th> View </th><th> Update </th><th> Delete </th></tr></thead>
+			<thead><tr><th> Item ID </th><th> Name </th> <th> View </th><th> Update </th></tr></thead>
 			<tbody>	
 <%			for (MenuItemBean mItem: menuItems) {
 				long menuItemId = mItem.getId();
@@ -53,12 +53,6 @@
 						<input type="submit" value="Update">
 						</form>
 					</td>
-					<td>
-						<form action="${pageContext.request.contextPath}/menuItem/delete" method="POST">
-						<input type="hidden" name="<%=ParamLabels.MenuItem.ID%>" value="<%=menuItemId%>">
-						<input type="submit" value="Delete">
-						</form>
-					</td>								
 				</tr>
 <% 			}
 %>			</tbody>
