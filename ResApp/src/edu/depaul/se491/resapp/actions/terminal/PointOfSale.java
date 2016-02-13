@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.depaul.se491.resapp.terminal;
+package edu.depaul.se491.resapp.actions.terminal;
 
 import java.io.IOException;
 

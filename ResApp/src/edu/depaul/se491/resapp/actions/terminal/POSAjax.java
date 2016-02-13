@@ -1,9 +1,12 @@
 /**
  * 
  */
-package edu.depaul.se491.resapp.terminal;
+package edu.depaul.se491.resapp.actions.terminal;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +17,7 @@ import com.google.gson.JsonParseException;
 
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.OrderBean;
+import edu.depaul.se491.beans.OrderItemBean;
 import edu.depaul.se491.enums.AccountRole;
 import edu.depaul.se491.resapp.actions.BaseAction;
 import edu.depaul.se491.ws.clients.OrderServiceClient;
@@ -22,15 +26,14 @@ import edu.depaul.se491.ws.clients.OrderServiceClient;
  * @author Malik
  *
  */
-@WebServlet("/terminal/station/ajax/update")
-public class KSAjaxUpdate extends BaseAction {
+@WebServlet("/terminal/pos/ajax")
+public class POSAjax extends BaseAction {
 	private static final long serialVersionUID = 1L;
-
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		AccountBean loggedinAccount = getLoggedinAccount(request);
 		String jsonResponse = null;
-		
 		if (loggedinAccount == null) {
 			jsonResponse = getInvalidResponse("Access Denied. You are not logged in");
 		} else if (loggedinAccount.getRole() != AccountRole.EMPLOYEE){
@@ -39,22 +42,20 @@ public class KSAjaxUpdate extends BaseAction {
 			String orderInJson = request.getParameter("order");
 			
 			if (orderInJson == null) {
-				jsonResponse = getInvalidResponse("Missing 'order' or 'orderItems' request parameters");
+				jsonResponse = getInvalidResponse("Missing 'order' request parameters");
 			} else {
 				OrderBean order = getOrderBean(orderInJson);
 				if (order == null) {
 					jsonResponse = getInvalidResponse("failed to parse json order");
-				} else if (isValidOrderBean(order, false) == false){
+				} else if (isValidOrderBean(order, true) == false){
 					jsonResponse = getInvalidResponse("Invalid order data");
 				} else {
 					OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
-					Boolean updated = serviceClient.update(order);
-					if (updated == null) {
+					OrderBean createdOrder = serviceClient.post(order);
+					if (createdOrder == null) {
 						jsonResponse = getInvalidResponse(serviceClient.getResponseMessage());
-					} else if (updated == false) {
-						jsonResponse = getInvalidResponse("falied to updated order");
 					} else {
-						jsonResponse = "{\"updated\": true}";
+						jsonResponse = "{\"added\": true}";
 					}
 				}
 			}
@@ -69,14 +70,30 @@ public class KSAjaxUpdate extends BaseAction {
 		OrderBean order = null;
 		try {
 			order = new Gson().fromJson(orderInJson, OrderBean.class);
+			OrderItemBean[] orderItems = order.getOrderItems();
+			if (orderItems != null) {
+				List<OrderItemBean> noneZeroQtyOItems = new ArrayList<OrderItemBean>();	
+				for (OrderItemBean oItem: orderItems) {
+					if (oItem.getQuantity() > 0) {
+						noneZeroQtyOItems.add(oItem);
+					}
+				}
+				int size = noneZeroQtyOItems.size();
+				if (size == 0) {
+					order.setOrderItems(null);
+				} else {
+					order.setOrderItems(noneZeroQtyOItems.toArray(new OrderItemBean[size]));
+				}
+			}
+			
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		}
 		return order;
 	}
-	
+
 	private String getInvalidResponse(String message) {
-		String response = "{\"updated\": false, \"message\": \"" +message+ "\"}";
+		String response = "{\"added\": false, \"message\": \"" +message+ "\"}";
 		return response;
 	}
 }

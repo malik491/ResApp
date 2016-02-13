@@ -13,6 +13,7 @@ import edu.depaul.se491.utils.ParamLabels;
 
 @WebServlet("/logoff")
 public class LogOff extends BaseAction {
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

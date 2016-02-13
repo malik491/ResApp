@@ -105,13 +105,12 @@ function ajaxUpdateOrder(updatedOrder) {
 			   		if (data) {
 			   			if (data.updated === false) {
 			   				alert('failed to update order: ' + data.message);
-			   			} else {
-							orders.splice(0, 1);
-							
-							$('#accordion > h3').first().remove();
-							$('#accordion > div').first().remove();
-							$("#accordion").accordion('refresh');
 			   			}
+						orders.splice(0, 1);
+						
+						$('#accordion > h3').first().remove();
+						$('#accordion > div').first().remove();
+						$("#accordion").accordion('refresh');
 			   		} else {
 			   			alert('malformed server ajax response');
 			   		}

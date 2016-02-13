@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.depaul.se491.resapp.terminal;
+package edu.depaul.se491.resapp.actions.terminal;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -22,14 +22,15 @@ import edu.depaul.se491.ws.clients.OrderServiceClient;
  * @author Malik
  *
  */
-@WebServlet("/terminal/pos/ajax")
-public class POSAjax extends BaseAction {
+@WebServlet("/terminal/station/ajax/update")
+public class KSAjaxUpdate extends BaseAction {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		AccountBean loggedinAccount = getLoggedinAccount(request);
 		String jsonResponse = null;
+		
 		if (loggedinAccount == null) {
 			jsonResponse = getInvalidResponse("Access Denied. You are not logged in");
 		} else if (loggedinAccount.getRole() != AccountRole.EMPLOYEE){
@@ -38,20 +39,22 @@ public class POSAjax extends BaseAction {
 			String orderInJson = request.getParameter("order");
 			
 			if (orderInJson == null) {
-				jsonResponse = getInvalidResponse("Missing 'order' request parameters");
+				jsonResponse = getInvalidResponse("Missing 'order' or 'orderItems' request parameters");
 			} else {
 				OrderBean order = getOrderBean(orderInJson);
 				if (order == null) {
 					jsonResponse = getInvalidResponse("failed to parse json order");
-				} else if (isValidOrderBean(order, true) == false){
+				} else if (isValidOrderBean(order, false) == false){
 					jsonResponse = getInvalidResponse("Invalid order data");
 				} else {
 					OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
-					OrderBean createdOrder = serviceClient.post(order);
-					if (createdOrder == null) {
+					Boolean updated = serviceClient.update(order);
+					if (updated == null) {
 						jsonResponse = getInvalidResponse(serviceClient.getResponseMessage());
+					} else if (updated == false) {
+						jsonResponse = getInvalidResponse("falied to updated order");
 					} else {
-						jsonResponse = "{\"added\": true}";
+						jsonResponse = "{\"updated\": true}";
 					}
 				}
 			}
@@ -71,9 +74,9 @@ public class POSAjax extends BaseAction {
 		}
 		return order;
 	}
-
+	
 	private String getInvalidResponse(String message) {
-		String response = "{\"added\": false, \"message\": \"" +message+ "\"}";
+		String response = "{\"updated\": false, \"message\": \"" +message+ "\"}";
 		return response;
 	}
 }

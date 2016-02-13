@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.depaul.se491.resapp.terminal;
+package edu.depaul.se491.resapp.actions.terminal;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.beans.OrderItemBean;
 import edu.depaul.se491.enums.AccountRole;
 import edu.depaul.se491.enums.MenuItemCategory;
+import edu.depaul.se491.enums.OrderItemStatus;
 import edu.depaul.se491.enums.OrderStatus;
 import edu.depaul.se491.resapp.actions.BaseAction;
 import edu.depaul.se491.utils.ParamLabels;
@@ -89,7 +90,7 @@ public class KSAjaxFetch extends BaseAction {
 			OrderItemBean[] items = order.getOrderItems();
 			if (items != null && items.length > 0) {
 				for (OrderItemBean oItem: items) {
-					if (oItem.getMenuItem().getItemCategory() == selectedStation) {
+					if (oItem.getMenuItem().getItemCategory() == selectedStation && oItem.getStatus() == OrderItemStatus.NOT_READY) {
 						orders.add(order);
 						break;
 					}

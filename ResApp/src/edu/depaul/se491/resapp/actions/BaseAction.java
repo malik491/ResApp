@@ -181,10 +181,13 @@ public class BaseAction extends HttpServlet {
 		}
 		
 		if (isValid) {
+			boolean isAllZeroQty = true;
 			// validate each order item
 			for(OrderItemBean oItem: order.getOrderItems()) {
 				isValid &= isValidOrderItemBean(oItem);
+				isAllZeroQty &= (oItem.getQuantity() == 0);
 			}
+			isValid &= (isAllZeroQty == false);
 		}
 		
 		return isValid;

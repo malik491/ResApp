@@ -212,8 +212,15 @@ function isValidAddress(address) {
 	return true;
  }
  
+ function isAllZeroQty(orderItems) {
+	 var isAllZero = true;
+	 for(var i=0; i < orderItems.length; i++) {
+		 isAllZero = isAllZero && (orderItems[i].quantity === 0);
+	 }
+	 return isAllZero;
+ }
+ 
  $(document).ready(function(){
-	 console.log('ready');
 	 
 	$('#pos_order_address').hide();
 	$('#pos_order_creditcard').hide();
@@ -225,8 +232,12 @@ function isValidAddress(address) {
 	$('#checkout_button').click(
 		function(){
 			if (currentOrder !== null) {
-				$('.pos_overlay').show(700); 
-				$('.pos_ordertype').show(800);				
+				if (isAllZeroQty(currentOrder.orderItems) === true) {
+					$('#clear_button').trigger('click');
+				} else {
+					$('.pos_overlay').show(700); 
+					$('.pos_ordertype').show(800);					
+				}
 			}
 	});
 

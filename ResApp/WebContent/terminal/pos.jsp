@@ -27,7 +27,8 @@
 </head>
 <body>
  	<div class="pos_header">
-		<span id="logo"> Point Of Sale</span> <div id="logoff"> <a href="${pageContext.request.contextPath}/logoff"> Log off</a> </div>
+		<span id="logo"> Point Of Sale</span> 
+		<div id="logoff"> <a href="${pageContext.request.contextPath}/logoff"> Log off</a> </div>
 	</div>
 	<div class="pos_container">
 
