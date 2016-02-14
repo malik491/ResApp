@@ -1,20 +1,24 @@
 /**
  * 
  */
+var updatingList = false;
 
 $(document).ready(function() {
 	$("#accordion").accordion();
 	$(window).on({
 		keyup : function(e){
 			if (e.keyCode === 32) {
-				var hiddenInput = $('#accordion > div > input').first();
-				if (hiddenInput && hiddenInput.length > 0) {
-					var orderId = parseInt(hiddenInput.val());
-					var topOrder = getOrder(orderId);
-					if (topOrder !== null) {
-						updateOrderItemStatus(topOrder);
-						ajaxUpdateOrder(topOrder);
-					}
+				if (orders.length > 0) {
+					var hiddenInput = $('#accordion > div > input').first();
+					if (hiddenInput.length > 0) {
+						var orderId = parseInt(hiddenInput.val());
+						var topOrder = getOrder(orderId);
+						if (topOrder !== null) {
+							updateOrderItemStatus(topOrder);
+							var copiedOrder = $.extend(true, {}, topOrder);
+							ajaxUpdateOrder(copiedOrder);
+						}
+					}					
 				}
 			}
 		}
@@ -25,9 +29,6 @@ $(document).ready(function() {
 
 
 function getOrder(id) {
-	if (orders === null)
-		return null;
-	
 	if (id === undefined || id === 0 || id === NaN)
 		return null;
 	
@@ -44,9 +45,6 @@ function getOrder(id) {
 }
 
 function updateOrderItemStatus(order) {
-	if (order === null)
-		return;
-	
 	var orderItems = order.orderItems;
 	for (var i=0; i < orderItems.length; i++) {
 		var oItem = orderItems[i];
@@ -59,9 +57,16 @@ function updateOrderItemStatus(order) {
 
 function ajaxFetchOrders() {
 	var ids = [];
-	for (var i=0; i < orders.length; i++) {
-		ids.push(orders[i].id);
-	}
+	while (true) {
+		if (updatingList === false) {
+			updatingList = true;
+			for (var i=0; i < orders.length; i++) {
+				ids.push(orders[i].id);
+			}
+			break;
+		}
+	}	
+	updatingList = false;
 	
 	$.ajax({
 		   type: 'POST',
@@ -71,17 +76,15 @@ function ajaxFetchOrders() {
 		   success: 
 			   	function(data, textStatus, jqXHR) {
 		   			console.log(data);
-			   		if (data.valid === true) {
-			   			var newOrdersStart = orders.length;
+		   			if (data.valid === undefined) {
+		   				alert('Malformed server response (ajax)');
+		   			} else if (data.valid === false) {
+			   			alert('failed to fetch new orders: ' + data.message);
+			   		} else if (data.valid === true) {
 			   			if (data.orders.length > 0) {
-			   				orders = orders.concat(data.orders);
-			   				appendNewOrders(newOrdersStart);
+			   				appendNewOrders(data.orders);
 			   			}
 			   			setTimeout(ajaxFetchOrders, 5000);
-			   		} else if (data.valid === false) {
-			   			alert(data.message);
-			   		} else {
-			   			alert('malformed server ajax response');
 			   		}
 		    	},
 		    error: 
@@ -92,27 +95,30 @@ function ajaxFetchOrders() {
 }
 
 function ajaxUpdateOrder(updatedOrder) {
-	var copiedOrder = $.extend(true, {}, updatedOrder);
-	
 	$.ajax({
 		   type: 'POST',
 		   url: ajaxUpdateURL,
 		   dataType: 'JSON',
-		   data: { order: JSON.stringify(copiedOrder)},
+		   data: { order: JSON.stringify(updatedOrder), mItemCategory: currentStation},
 		   success: 
 			   	function(data, textStatus, jqXHR) {
 		   			console.log(data);
-			   		if (data) {
-			   			if (data.updated === false) {
-			   				alert('failed to update order: ' + data.message);
+			   		if (data.updated === undefined) {
+			   			alert('Malformed server response (ajax)');
+			   		} else if (data.updated === false) {
+		   				alert('failed to update order: ' + data.message);
+			   		} else if (data.updated === true) {
+			   			while (true) {
+			   				if (updatingList === false) {
+					   			updatingList = true;
+			   					orders.splice(0, 1);
+					   			break;
+			   				}
 			   			}
-						orders.splice(0, 1);
-						
-						$('#accordion > h3').first().remove();
+			   			updatingList = false;
+			   			$('#accordion > h3').first().remove();
 						$('#accordion > div').first().remove();
 						$("#accordion").accordion('refresh');
-			   		} else {
-			   			alert('malformed server ajax response');
 			   		}
 		    	},
 		    error: 
@@ -123,20 +129,19 @@ function ajaxUpdateOrder(updatedOrder) {
 }
 
 
-function appendNewOrders(index) {
+function appendNewOrders(newOrders) {
 	var accordion = $("#accordion");
-	var refresh = false;
-	for (var i=index; i < orders.length; i++) {
-		refresh = true;
-		
-		var order = orders[i];
+	for (var i=0; i < newOrders.length; i++) {
+		var order = newOrders[i];
 		var items = order.orderItems;
-		console.log(order);
 		
 		var table = $('<table />');
 		for (var j=0; j < items.length; j++) {
 			var oItem = items[j];
 			var menuItem = oItem.menuItem;
+			
+			console.log(oItem.status + ' -- Not Ready? ' + (oItem.status === 'NOT_READY'));
+			console.log(menuItem.itemCategory + ' -- Same station? ' + (menuItem.itemCategory === currentStation));
 			
 			if (menuItem.itemCategory === currentStation && oItem.status === 'NOT_READY') {
 				var mItemInput = $('<input />', {type:"hidden", name:'mItemId', value:"" + menuItem.id });
@@ -163,8 +168,13 @@ function appendNewOrders(index) {
 		accordion.append(h3);
 		accordion.append(div);
 	}
-	
-	if (refresh === true) {
-		$("#accordion").accordion('refresh');
+	while (true) {
+		if (updatingList === false) {
+			updatingList = true;
+			orders = orders.concat(newOrders);
+			$("#accordion").accordion('refresh');
+			break;
+		}
 	}
+	updatingList = false;
 }

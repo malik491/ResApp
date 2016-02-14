@@ -15,7 +15,9 @@ import com.google.gson.JsonParseException;
 import edu.depaul.se491.beans.AccountBean;
 import edu.depaul.se491.beans.OrderBean;
 import edu.depaul.se491.enums.AccountRole;
+import edu.depaul.se491.enums.MenuItemCategory;
 import edu.depaul.se491.resapp.actions.BaseAction;
+import edu.depaul.se491.utils.ParamLabels;
 import edu.depaul.se491.ws.clients.OrderServiceClient;
 
 /**
@@ -37,9 +39,10 @@ public class KSAjaxUpdate extends BaseAction {
 			jsonResponse = getInvalidResponse("Access Deined. Not allowed based on your role");
 		} else {
 			String orderInJson = request.getParameter("order");
+			MenuItemCategory selectedStation = getSelectedStation(request);
 			
-			if (orderInJson == null) {
-				jsonResponse = getInvalidResponse("Missing 'order' or 'orderItems' request parameters");
+			if (orderInJson == null || selectedStation == null) {
+				jsonResponse = getInvalidResponse("Missing 'order' or 'mItemCategory' request parameters");
 			} else {
 				OrderBean order = getOrderBean(orderInJson);
 				if (order == null) {
@@ -48,7 +51,16 @@ public class KSAjaxUpdate extends BaseAction {
 					jsonResponse = getInvalidResponse("Invalid order data");
 				} else {
 					OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
-					Boolean updated = serviceClient.update(order);
+					Boolean updated = null;
+					
+					if (selectedStation == MenuItemCategory.MAIN) {
+						updated = serviceClient.mainStationUpdate(order);
+					} else if (selectedStation == MenuItemCategory.BEVERAGE) {
+						updated = serviceClient.beverageStationupdate(order);
+					} else {
+						updated = serviceClient.sideStationUpdate(order);
+					}
+				
 					if (updated == null) {
 						jsonResponse = getInvalidResponse(serviceClient.getResponseMessage());
 					} else if (updated == false) {
@@ -73,6 +85,16 @@ public class KSAjaxUpdate extends BaseAction {
 			e.printStackTrace();
 		}
 		return order;
+	}
+	
+	private MenuItemCategory getSelectedStation(HttpServletRequest request) {
+		String category = request.getParameter(ParamLabels.MenuItem.ITEM_CATEGORY);
+		MenuItemCategory station = null;
+		try {
+			station = MenuItemCategory.valueOf(category);
+		} catch (Exception e) {}
+		
+		return station;
 	}
 	
 	private String getInvalidResponse(String message) {
