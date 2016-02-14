@@ -49,13 +49,13 @@
 					<td>
 						<form action="${pageContext.request.contextPath}/account/update" method="POST">
 						<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
-						<input type="submit" value="Update">
+						<input type="submit" value="Update" <% if (account.getCredentials().getUsername().equalsIgnoreCase("employee1")){%> disabled="disabled"<%}%>>
 						</form>
 					</td>
 					<td>
 						<form action="${pageContext.request.contextPath}/account/delete" method="POST">
 						<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
-						<input type="submit" value="Delete">
+						<input type="submit" value="Delete" <% if (account.getCredentials().getUsername().equalsIgnoreCase("employee1")){%> disabled="disabled"<%}%>>
 						</form>
 					</td>								
 				</tr>
