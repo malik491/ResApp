@@ -56,7 +56,7 @@ public class KSAjaxUpdate extends BaseAction {
 					if (selectedStation == MenuItemCategory.MAIN) {
 						updated = serviceClient.mainStationUpdate(order);
 					} else if (selectedStation == MenuItemCategory.BEVERAGE) {
-						updated = serviceClient.beverageStationupdate(order);
+						updated = serviceClient.beverageStationUpdate(order);
 					} else {
 						updated = serviceClient.sideStationUpdate(order);
 					}
