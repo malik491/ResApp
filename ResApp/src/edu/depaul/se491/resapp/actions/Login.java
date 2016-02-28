@@ -45,7 +45,7 @@ public class Login extends BaseAction {
 
 			if (isValid) {
 				// use account service to login
-				AccountServiceClient serviceClient = new AccountServiceClient(credentials, ACCOUNT_SERVICE_URL);
+				AccountServiceClient serviceClient = new AccountServiceClient(credentials, ACCOUT_WEB_SERVICE_URL);
 				
 				// get own account
 				account = serviceClient.get(credentials.getUsername());

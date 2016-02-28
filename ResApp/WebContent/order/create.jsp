@@ -20,7 +20,7 @@
 	<a href="${pageContext.request.contextPath}/home.jsp"> Home Page </a> <br> <br>
 <%
 	String msg = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
-	MenuItemBean[] menuItems = (MenuItemBean[]) request.getAttribute(ParamLabels.MenuItem.MENU_ITEM_BEAN_LIST);
+	MenuItemBean[] menuItems = (MenuItemBean[]) request.getAttribute(ParamLabels.MenuItem.VISIBLE_MENU_ITEM_BEAN_LIST);
 	
 	if (msg != null) {
 %>		<h3><%=msg%></h3> 

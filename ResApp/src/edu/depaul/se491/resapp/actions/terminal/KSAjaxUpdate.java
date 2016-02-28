@@ -50,7 +50,7 @@ public class KSAjaxUpdate extends BaseAction {
 				} else if (isValidOrderBean(order, false) == false){
 					jsonResponse = getInvalidResponse("Invalid order data");
 				} else {
-					OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+					OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_WEB_SERVICE_URL);
 					Boolean updated = null;
 					
 					if (selectedStation == MenuItemCategory.MAIN) {

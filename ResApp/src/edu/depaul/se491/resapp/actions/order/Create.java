@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.depaul.se491.resapp.actions.order;
 
 
@@ -41,8 +38,8 @@ public class Create extends BaseAction {
 		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
 			
 			//get the menu items.			
-			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
-			menuItems = serviceClient.getAll() ;
+			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENU_WEB_SERVICE_URL);
+			menuItems = serviceClient.getAllVisible() ;
 			jspMsg =(menuItems == null) ? serviceClient.getResponseMessage() : null;
 			
 			if(menuItems != null)
@@ -54,7 +51,7 @@ public class Create extends BaseAction {
 					OrderBean order = getOrderFromRequest(request);
 					if(isValidOrderBean(order, true)){
 						//add the order
-						OrderServiceClient orderServiceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+						OrderServiceClient orderServiceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_WEB_SERVICE_URL);
 						OrderBean createdOrder = orderServiceClient.post(order);
 						jspMsg =(createdOrder == null) ? orderServiceClient.getResponseMessage() : "Successfully Created Order";
 					} else {
@@ -69,7 +66,7 @@ public class Create extends BaseAction {
 		if (jspMsg != null)
 			request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
 		if (menuItems != null)
-			request.setAttribute(ParamLabels.MenuItem.MENU_ITEM_BEAN_LIST, menuItems);
+			request.setAttribute(ParamLabels.MenuItem.VISIBLE_MENU_ITEM_BEAN_LIST, menuItems);
 		
 		String jspURL = "/order/create.jsp";
 		getServletContext().getRequestDispatcher(jspURL).forward(request, response);

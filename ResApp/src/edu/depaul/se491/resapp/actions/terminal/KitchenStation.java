@@ -46,7 +46,7 @@ public class KitchenStation extends BaseAction {
 		
 		MenuItemCategory selectedStation = getSelectedStation(request);
 		if (selectedStation != null) {
-			OrderServiceClient service = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+			OrderServiceClient service = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_WEB_SERVICE_URL);
 			OrderBean[] submittedOrders = service.getAllWithStatus(OrderStatus.SUBMITTED);
 			jspMsg = submittedOrders == null? service.getResponseMessage() : null;
 			

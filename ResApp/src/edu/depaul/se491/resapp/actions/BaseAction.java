@@ -38,15 +38,38 @@ import edu.depaul.se491.validators.UserValidator;
 import edu.depaul.se491.ws.clients.MenuServiceClient;
 
 public class BaseAction extends HttpServlet {
-	private static final long serialVersionUID = 1L; // ignore this
-
-	protected static final String CORE_APP_URL = "http://localhost/CoreApp";
-	protected static final String ACCOUNT_SERVICE_URL = CORE_APP_URL + "/account";
-	protected static final String MENUITEM_SERVICE_URL = CORE_APP_URL + "/menuItem";
-	protected static final String ORDER_SERVICE_URL = CORE_APP_URL + "/order";
+	private static final long serialVersionUID = 1L;
+	
+	protected static String ACCOUT_WEB_SERVICE_URL;
+	protected static String ORDER_WEB_SERVICE_URL;
+	protected static String MENU_WEB_SERVICE_URL;
 	
 	protected static final String LOGIN_JSP_URL = "/login.jsp";
 
+	@Override
+	public void init() throws ServletException {		
+		String hostname = getServletContext().getInitParameter("web-service-hostname");
+		String port = getServletContext().getInitParameter("web-service-port");
+		String appName = getServletContext().getInitParameter("web-service-appname");
+		
+		if (hostname == null)
+			System.err.println("Missing web-service-hostname init parameter. 'localhost' will be used.");
+
+		if (port == null)
+			System.err.println("Missing web-service-port init parameter. Port '80' will be used.");
+		
+		if (appName == null)
+			System.err.println("Missing web-service-appname init parameter (see web.xml). 'CoreApp' will be used.");
+
+		hostname = hostname != null? hostname.trim() : "localhost";
+		appName = appName != null? appName.trim() : "CoreApp";
+		port = getPort(port);
+		
+		ACCOUT_WEB_SERVICE_URL = String.format("http://%s:%s/%s/account", hostname, port, appName);
+		ORDER_WEB_SERVICE_URL = String.format("http://%s:%s/%s/order", hostname, port, appName);
+		MENU_WEB_SERVICE_URL = String.format("http://%s:%s/%s/menuItem", hostname, port, appName);
+
+	}
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -327,11 +350,13 @@ public class BaseAction extends HttpServlet {
 		if (loggedinAccount == null)
 			return null;
 		
-		MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
-		MenuItemBean[] menu = serviceClient.getAll();
+		MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENU_WEB_SERVICE_URL);
+		MenuItemBean[] menu = serviceClient.getAllVisible();
+		
+		if (menu == null)
+			return null;
 		
 		List<OrderItemBean> orderItems = new ArrayList<OrderItemBean>();
-		
 		for (MenuItemBean menuItem: menu) {
 			long mItemId = menuItem.getId();
 			
@@ -541,4 +566,17 @@ public class BaseAction extends HttpServlet {
 		return type;
 	}
 
+	private String getPort(String port) {
+		String result = "80";
+		if (port!= null) {
+			try {
+				port = port.trim();
+				Integer.parseInt(port);
+				result = port;
+			} catch (NumberFormatException e) {
+				System.err.println("Invalid port number (not a number). port '80' will be used.");
+			}
+		}
+		return result;
+	}
 }

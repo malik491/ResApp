@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.depaul.se491.resapp.actions.order;
 
 import java.io.IOException;
@@ -38,7 +35,7 @@ public class Manage extends BaseAction {
 		String jspMsg = null;
 		OrderBean[] orders = null;
 		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
-			OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+			OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_WEB_SERVICE_URL);
 			orders = serviceClient.getAll();
 			jspMsg = (orders == null)? serviceClient.getResponseMessage() : null;	
 		}

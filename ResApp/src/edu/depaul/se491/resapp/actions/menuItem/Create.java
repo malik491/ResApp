@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.depaul.se491.resapp.actions.menuItem;
 
 import java.io.IOException;
@@ -42,7 +39,7 @@ public class Create extends BaseAction {
 				if(menuItemName != null)
 				{
 					menuItem = getMenuItemFromRequest(request);
-					MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
+					MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENU_WEB_SERVICE_URL);
 					menuItem = serviceClient.post(menuItem);
 					jspMsg =(menuItem == null) ? serviceClient.getResponseMessage() : "Successfully created new menu item";
 				}

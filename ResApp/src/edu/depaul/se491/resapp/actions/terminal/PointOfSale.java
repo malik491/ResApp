@@ -39,15 +39,15 @@ public class PointOfSale extends BaseAction {
 		String jspMsg = null;
 		MenuItemBean[] menuItems = null;
 		if (loggedinAccount.getRole() == AccountRole.EMPLOYEE) {
-			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
-			menuItems = serviceClient.getAll();
+			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENU_WEB_SERVICE_URL);
+			menuItems = serviceClient.getAllVisible();
 			jspMsg = (menuItems == null)? serviceClient.getResponseMessage() : null;	
 		}
 		
 		if (jspMsg != null)
 			request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
 		if (menuItems != null) {
-			request.setAttribute(ParamLabels.MenuItem.MENU_ITEM_BEAN_LIST, menuItems);
+			request.setAttribute(ParamLabels.MenuItem.VISIBLE_MENU_ITEM_BEAN_LIST, menuItems);
 			request.setAttribute("jsonMenuItemList", new Gson().toJson(menuItems));
 		}
 		

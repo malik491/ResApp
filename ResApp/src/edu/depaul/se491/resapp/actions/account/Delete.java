@@ -36,7 +36,7 @@ public class Delete extends BaseAction {
 			String username = (String) request.getParameter(ParamLabels.Credentials.USERNAME);
 			boolean isValid = new CredentialsValidator().isValidUsername(username);
 			if (isValid) {
-				AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUNT_SERVICE_URL);
+				AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
 				Boolean deleted = serviceClient.delete(username);
 				jspMsg = (deleted == null)? serviceClient.getResponseMessage() : "Successfully deleted account";	
 			}

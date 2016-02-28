@@ -38,7 +38,7 @@ public class Create extends BaseAction {
 			account.setRole(AccountRole.EMPLOYEE);
 			
 			if (isValidAccountBean(account, true)) {
-				AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUNT_SERVICE_URL);
+				AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
 				account = serviceClient.post(account);
 				if (account == null)
 					jspMsg = serviceClient.getResponseMessage();

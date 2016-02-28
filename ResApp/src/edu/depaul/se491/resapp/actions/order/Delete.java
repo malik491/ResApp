@@ -40,7 +40,7 @@ public class Delete extends BaseAction {
 			boolean isValid = new OrderValidator().validateId(new Long(OrderID), false);
 			
 			if(isValid) {
-				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_WEB_SERVICE_URL);
 				Boolean deleted = serviceClient.delete(OrderID);
 				jspMsg =(deleted == null) ? serviceClient.getResponseMessage() : (deleted ? "Successfully deleted the order." : "Failed to delete the order") ;
 			} else {

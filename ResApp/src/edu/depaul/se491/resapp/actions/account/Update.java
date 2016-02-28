@@ -47,7 +47,7 @@ public class Update extends BaseAction {
 			if (isValidAccountBean(updatedAccount, false)) 
 			{	
 				// update it
-				AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUNT_SERVICE_URL);
+				AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
 				Boolean updated = serviceClient.update(updatedAccount);
 				
 				jspMsg = (updated == null)? serviceClient.getResponseMessage() : "Successfully updated account";
@@ -67,7 +67,7 @@ public class Update extends BaseAction {
 
 		} else if (loggedinAccount.getRole() == AccountRole.MANAGER) {
 			// manager can update other's account
-			AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUNT_SERVICE_URL);
+			AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
 			
 			if (isValidAccountBean(updatedAccount, false)) 
 			{	

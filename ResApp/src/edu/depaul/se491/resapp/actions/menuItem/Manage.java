@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.depaul.se491.resapp.actions.menuItem;
 
 import java.io.IOException;
@@ -35,17 +32,22 @@ public class Manage extends BaseAction {
 		
 		
 		String jspMsg = null;
-		MenuItemBean[] menuItems = null;
+		MenuItemBean[] visibleMenuItems = null;
+		MenuItemBean[] hiddenMenuItems = null;
 		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
-			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
-			menuItems = serviceClient.getAll();
-			jspMsg = (menuItems == null)? serviceClient.getResponseMessage() : null;	
+			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENU_WEB_SERVICE_URL);
+			visibleMenuItems = serviceClient.getAllVisible();
+			hiddenMenuItems = serviceClient.getAllHidden();
+			
+			jspMsg = (visibleMenuItems == null || hiddenMenuItems == null)? serviceClient.getResponseMessage() : null;	
 		}
 		
 		if (jspMsg != null)
 			request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
-		if (menuItems != null)
-			request.setAttribute(ParamLabels.MenuItem.MENU_ITEM_BEAN_LIST, menuItems);
+		if (visibleMenuItems != null)
+			request.setAttribute(ParamLabels.MenuItem.VISIBLE_MENU_ITEM_BEAN_LIST, visibleMenuItems);
+		if (hiddenMenuItems != null)
+			request.setAttribute(ParamLabels.MenuItem.HIDDEN_MENU_ITEM_BEAN_LIST, hiddenMenuItems);
 		
 		String jspUrl = "/menuItem/manage.jsp";
 		getServletContext().getRequestDispatcher(jspUrl).forward(request, response);

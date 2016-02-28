@@ -50,7 +50,7 @@ public class KSAjaxFetch extends BaseAction {
 			if (excludeIds == null || selectedStation == null) {
 				jsonResponse = getInvalidResponse("Missing 'excludeIds' or 'selectedStation' request parameters");
 			} else {
-				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_WEB_SERVICE_URL);
 				OrderBean[] submittedOrders = serviceClient.getAllWithStatus(OrderStatus.SUBMITTED);
 				if (submittedOrders == null) {
 					jsonResponse = getInvalidResponse(serviceClient.getResponseMessage());

@@ -43,7 +43,7 @@ public class View extends BaseAction {
 		MenuItemBean menuItem = null;
 		
 		if (isValid && loggedinAccount.getRole() == AccountRole.MANAGER) {
-			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENUITEM_SERVICE_URL);
+			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENU_WEB_SERVICE_URL);
 			menuItem = serviceClient.get(menuItemId);
 			jspMsg = (menuItem == null)? serviceClient.getResponseMessage() : null;			
 		}

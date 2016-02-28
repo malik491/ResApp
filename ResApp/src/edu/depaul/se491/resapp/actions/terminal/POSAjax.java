@@ -50,7 +50,7 @@ public class POSAjax extends BaseAction {
 				} else if (isValidOrderBean(order, true) == false){
 					jsonResponse = getInvalidResponse("Invalid order data");
 				} else {
-					OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+					OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_WEB_SERVICE_URL);
 					OrderBean createdOrder = serviceClient.post(order);
 					if (createdOrder == null) {
 						jsonResponse = getInvalidResponse(serviceClient.getResponseMessage());

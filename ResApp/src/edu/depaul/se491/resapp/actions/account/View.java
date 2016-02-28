@@ -44,7 +44,7 @@ public class View extends BaseAction {
 			// validate username and then look up account (clicked 'view' from manage.jsp)
 			boolean isValid = new CredentialsValidator().isValidUsername(username);
 			if (isValid) {
-				AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUNT_SERVICE_URL);
+				AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
 				account = serviceClient.get(username);
 				jspMsg = (account == null)? serviceClient.getResponseMessage() : null;
 			}

@@ -43,7 +43,7 @@ public class View extends BaseAction {
 			boolean isValid = new OrderValidator().validateId(orderId, false);
 
 			if (isValid) {
-				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_WEB_SERVICE_URL);
 				order = serviceClient.get(orderId);
 				jspMsg = (order == null)? serviceClient.getResponseMessage() : null;			
 			} else {

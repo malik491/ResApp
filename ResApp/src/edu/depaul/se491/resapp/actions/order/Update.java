@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.depaul.se491.resapp.actions.order;
 
 import java.io.IOException;
@@ -44,7 +41,7 @@ public class Update extends BaseAction {
 			
 			if (isValid) {
 				// we have a valid id, so either update order or load order to be updated 
-				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_SERVICE_URL);
+				OrderServiceClient serviceClient = new OrderServiceClient(loggedinAccount.getCredentials(), ORDER_WEB_SERVICE_URL);
 
 				updateOrderbean = getOrderFromRequest(request); 
 				if (isValidOrderBean(updateOrderbean, false)) {
