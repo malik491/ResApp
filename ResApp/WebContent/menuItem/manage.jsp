@@ -26,15 +26,17 @@
 		<h3> <%= message %> </h3>	
 <%	
 	} else if (visibleMenuItems != null && hiddenMenuItems != null) {
-		if (visibleMenuItems.length == 0) {
+		if (visibleMenuItems.length == 0  && hiddenMenuItems.length == 0 ) {
 %>		
-			<h3> There Are No Visible Menu Items You Can Manage </h3>
+			<h3> No Menu Items to Manage (empty menu) </h3>
 <%		
-		} else {
+		} 
+		
+		if (visibleMenuItems.length > 0){
 %>
 		<h4>Visible Menu Items</h4>
 		<table>
-			<thead><tr><th> Item ID </th><th> Name </th> <th> View </th><th> Update </th></tr></thead>
+			<thead><tr><th> Item ID </th><th> Name </th> <th> View </th><th> Update </th><th> Hide Item </th></tr></thead>
 			<tbody>	
 <%			for (MenuItemBean mItem: visibleMenuItems) {
 				long menuItemId = mItem.getId();
@@ -72,7 +74,7 @@
 %>			
 		<h4>Hidden Menu Items</h4>
 		<table>
-			<thead><tr><th> Item ID </th><th> Name </th> <th> View </th><th> Update </th></tr></thead>
+			<thead><tr><th> Item ID </th><th> Name </th> <th> View </th><th> Un-hide item </th></tr></thead>
 			<tbody>	
 <%			for (MenuItemBean mItem: hiddenMenuItems) {
 				long menuItemId = mItem.getId();
