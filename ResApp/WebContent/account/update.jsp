@@ -1,31 +1,26 @@
-<%@page import="edu.depaul.se491.utils.ParamLengths"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="edu.depaul.se491.beans.AccountBean,edu.depaul.se491.beans.CredentialsBean,edu.depaul.se491.beans.UserBean,edu.depaul.se491.beans.AddressBean" %>
 <%@ page import="edu.depaul.se491.enums.AccountRole,edu.depaul.se491.enums.AddressState" %>
 <%@ page import="edu.depaul.se491.utils.ParamLabels,edu.depaul.se491.utils.ParamPatterns" %>
+<%@page import="edu.depaul.se491.utils.ParamLengths"%>
 
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta charset="UTF-8">
 		<title>Update Account</title>
 		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/component.css"/>
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/demo.css"/>
 	</head>
-
 <body>
-	<div class="component">
-	<h3> Update Account </h3>
-	<a href="${pageContext.request.contextPath}/home.jsp"> Home Page </a> <br> <br>
-<% 
+<jsp:include page="/nav.jsp"></jsp:include>
 
-	// get msg (set by servlet)
+<main class="main"> 
+	<h3> Update Account </h3>
+<% 
 	String jspMsg = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	AccountBean account = (AccountBean) request.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
-	
 	if (jspMsg != null) {
-%>
-		<h3> <%= jspMsg %>	</h3>	
+%>		<div class="message"> <%= jspMsg %>	</div>	
 <%	}
 	
 	String password = ParamPatterns.Credentials.PASSWORD;
@@ -46,9 +41,10 @@
 		CredentialsBean credentials = account.getCredentials();
 		UserBean user = account.getUser();
 		AddressBean address = user.getAddress();
+		String submissionUrl = response.encodeURL(getServletContext().getContextPath() + "/account/update");
 %>
 		
-		<form id="updateForm" action="${pageContext.request.contextPath}/account/update" method="POST">
+		<form class="form" id="updateForm" action="<%=submissionUrl%>" method="POST">
 			<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=credentials.getUsername()%>">
 			<input type="hidden" name="<%=ParamLabels.Account.ROLE%>" value="<%=role.name()%>">
 			<input type="hidden" name="<%=ParamLabels.User.ID%>" value="<%=user.getId()%>">	
@@ -95,9 +91,13 @@
 			</table>
 			<input type="submit" value ="Update Account"> 
 		</form>
-	
-<%	}
+<%	
+		AccountBean loggedInUser = (AccountBean) session.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
+		if (loggedInUser != null && loggedInUser.getRole() == AccountRole.MANAGER) {
+%>			<a class="btn" href="<%= response.encodeURL(getServletContext().getContextPath() + "/account/manage") %>"> Manage Accounts </a>
+<%		}
+	}
 %>
-	</div>
+</main>
 </body>
 </html>

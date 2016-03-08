@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 
 <%@ page import="edu.depaul.se491.beans.AccountBean,edu.depaul.se491.beans.CredentialsBean,edu.depaul.se491.beans.UserBean,edu.depaul.se491.beans.AddressBean" %>
@@ -20,22 +20,22 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta charset="UTF-8">
 		<title>View Order</title>
 		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/component.css"/>
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/demo.css"/>
 	</head>
 
 <body>
-	<div class="component">
+<jsp:include page="/nav.jsp"></jsp:include>
+
+<main class="main">
 	<h3>View Order </h3>
-	<a href="${pageContext.request.contextPath}/home.jsp"> Home </a> <br> <br>
 <%
 	OrderBean order = (OrderBean) request.getAttribute(ParamLabels.Order.ORDER_BEAN);
 	String message = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	
 	if (message != null) {
-%> 		<h3><%= message %></h3> 
+%> 		<div class="message"><%= message %></div> 
 <%	} 
 	else if (order != null) {
 		long orderId = order.getId();
@@ -86,7 +86,7 @@
 				String price = String.format("&#36;%.2f", menuItem.getPrice()); //&#36; html for $
 				int quantity = oItem.getQuantity();
 					
-				String itemStatus = oItem.getStatus() == OrderItemStatus.NOT_READY? "not ready" : "ready";
+				String itemStatus = oItem.getStatus().toString();
 %>				<tr>
 					<td><%=name%></td><td><%=quantity%></td><td><%=price%></td><td><%=itemStatus%></td>
 				</tr>
@@ -94,9 +94,11 @@
 %>
 			</tbody>
 		</table>
+		
+		<a class="btn" href="<%= response.encodeURL(getServletContext().getContextPath() + "/order/manage") %>"> Manage Orders </a>
 <%	}
 %>
-	</div>
+</main>
 </body>
 
 </html>

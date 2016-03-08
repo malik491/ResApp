@@ -44,17 +44,12 @@ public class Login extends BaseAction {
 			boolean isValid = new CredentialsValidator().validate(credentials);
 
 			if (isValid) {
-				// use account service to login
 				AccountServiceClient serviceClient = new AccountServiceClient(credentials, ACCOUT_WEB_SERVICE_URL);
-				
-				// get own account
 				account = serviceClient.get(credentials.getUsername());
 				
 				if (account == null) {
-					// something is not right. maybe password is wrong etc
 					jspMsg = serviceClient.getResponseMessage();
 				} else {
-					// create new session and save this account into the session
 					synchronized (session) {
 						session.setAttribute(ParamLabels.Account.ACCOUNT_BEAN, account);
 						jspUrl = "/home.jsp";
@@ -64,13 +59,14 @@ public class Login extends BaseAction {
 				jspMsg = "Invalid login Credentials";
 			}
 		} else {
-			// user already logged in
 			jspUrl = "/home.jsp";
 		}
 		
 		if (jspMsg != null)
 			request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
-		
+		if (account != null)
+			request.setAttribute(ParamLabels.Account.ACCOUNT_BEAN, account);
+
 		getServletContext().getRequestDispatcher(jspUrl).forward(request, response);
 		
 	}

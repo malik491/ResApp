@@ -1,6 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="edu.depaul.se491.utils.ParamLengths"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
-
 <%@ page import="edu.depaul.se491.utils.ParamLabels,edu.depaul.se491.utils.ParamPatterns,edu.depaul.se491.utils.ParamValues" %>
 <%@ page import="edu.depaul.se491.beans.MenuItemBean" %>
 <%@ page import=" edu.depaul.se491.enums.MenuItemCategory" %>
@@ -8,22 +7,21 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta charset="UTF-8">
 		<title>Update Menu Item</title>
 		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/component.css"/>
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/demo.css"/>
 	</head>
 <body>
+<jsp:include page="/nav.jsp"></jsp:include>
 
-	<div class="component">
+<main class="main">
 	<h3> Update Menu Item </h3>
-	<a href="${pageContext.request.contextPath}/home.jsp"> Home Page </a> <br> <br>
 <%
 	String msg = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	MenuItemBean menuItem = (MenuItemBean) request.getAttribute(ParamLabels.MenuItem.MENU_ITEM_BEAN);
 	
 	if (msg != null) {
-%>		<h3><%= msg %></h3> 
+%>		<div class="message"><%= msg %></div> 
 <%	}
 	
 	if (menuItem != null) {
@@ -40,9 +38,12 @@
 		
 		double priceMin = ParamValues.MenuItem.MIN_PRICE;
 		double priceMax = ParamValues.MenuItem.MAX_PRICE;
+		
+		String submissionUrl = response.encodeURL(getServletContext().getContextPath() + "/menuItem/update");
 %>
-		<h3>Menu Item</h3>
-		<form id="updateForm" action="${pageContext.request.contextPath}/menuItem/update" method="POST">
+		<h3>Menu Item Information</h3>
+		
+		<form class="form" id="updateForm" action="<%= submissionUrl %>" method="POST">
 		<input type="hidden" name="<%=ParamLabels.MenuItem.ID%>" value="<%= id %>">
 		
 		<table>
@@ -79,9 +80,10 @@
 			
 		<input type="submit" value="Update Menu Item">
 		</form>
+		
+		<a class="btn" href="<%= response.encodeURL(getServletContext().getContextPath() + "/menuItem/manage") %>"> Manage Menu Items </a>
 <%	}	
 %>
-	</div>
-
+</main>
 </body>
 </html>

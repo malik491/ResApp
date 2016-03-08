@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="edu.depaul.se491.beans.AccountBean" %>
 <%@ page import="edu.depaul.se491.enums.AccountRole" %>
 <%@ page import="edu.depaul.se491.utils.ParamLabels" %>
@@ -6,27 +6,27 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta charset="UTF-8">
 		<title>Manage Accounts</title>
 		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/component.css"/>
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/demo.css"/>
 	</head>
 <body>
-	<div class="component">
+<jsp:include page="/nav.jsp"></jsp:include>
+
+<main class="main">
 	<h3>Manage Accounts</h3>
-	<a href="${pageContext.request.contextPath}/home.jsp">Home</a> <br> <br>
 <%
 	String message = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	AccountBean[] accounts = (AccountBean[]) request.getAttribute(ParamLabels.Account.ACCOUNT_BEAN_LIST);
 	
 	if (message != null) {
 %>		
-		<h3> <%= message %> </h3>	
+		<div class="message"> <%= message %> </div>	
 <%	
 	} else if (accounts != null) {
 		if (accounts.length == 0) {
 %>		
-			<h3> There Are No Accounts You Can Manage </h3>
+			<div class="message"> There Are No Employee Accounts to Manage </div>
 <%		
 		} else {
 %>
@@ -41,21 +41,21 @@
 					<td><%=username%></td>
 					<td><%=role%></td>	
 					<td>
-						<form action="${pageContext.request.contextPath}/account/view" method="POST">
+						<form action="<%= response.encodeURL(getServletContext().getContextPath() + "/account/view") %>" method="POST">
 						<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
-						<input type="submit" value="View">
+						<input type="image" src="${pageContext.request.contextPath}/icons/ic_pageview_black_24px.svg" alt="view">
 						</form>
 					</td>
 					<td>
-						<form action="${pageContext.request.contextPath}/account/update" method="POST">
+						<form action="<%= response.encodeURL(getServletContext().getContextPath() + "/account/update") %>" method="POST">
 						<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
-						<input type="submit" value="Update" <% if (account.getCredentials().getUsername().equalsIgnoreCase("employee1")){%> disabled="disabled"<%}%>>
+						<input type="image" src="${pageContext.request.contextPath}/icons/ic_update_black_24px.svg" alt="update">
 						</form>
 					</td>
 					<td>
-						<form action="${pageContext.request.contextPath}/account/delete" method="POST">
+						<form action="<%= response.encodeURL(getServletContext().getContextPath() + "/account/delete") %>" method="POST">
 						<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
-						<input type="submit" value="Delete" <% if (account.getCredentials().getUsername().equalsIgnoreCase("employee1")){%> disabled="disabled"<%}%>>
+						<input type="image" src="${pageContext.request.contextPath}/icons/ic_delete_black_24px.svg" alt="delete">
 						</form>
 					</td>								
 				</tr>
@@ -66,6 +66,6 @@
 <%		}
 	}
 %>
-	</div>
+</main>
 </body>
 </html>

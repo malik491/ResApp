@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="edu.depaul.se491.beans.AccountBean,edu.depaul.se491.beans.CredentialsBean,edu.depaul.se491.beans.UserBean,edu.depaul.se491.beans.AddressBean" %>
 <%@ page import="edu.depaul.se491.enums.AccountRole,edu.depaul.se491.enums.AddressState" %>
 <%@ page import="edu.depaul.se491.utils.ParamLabels" %>
@@ -9,24 +8,21 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta charset="UTF-8">
 		<title>View Menu Item</title>
 		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/component.css"/>
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/demo.css"/>
 	</head>
 <body>
-	<div class="component">
-	<h3> MenuItem Information </h3>
-	
-	<a href="${pageContext.request.contextPath}/home.jsp"> Home Page </a> <br> <br>
+<jsp:include page="/nav.jsp"></jsp:include>
 
+<main class="main">
+	<h3> View Menu Item </h3>
 <%
 	String message = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	MenuItemBean menuItem = (MenuItemBean) request.getAttribute(ParamLabels.MenuItem.MENU_ITEM_BEAN);
 	
 	if (message != null) {
-%>		
-		<h3> <%= message %> </h3>	
+%>		<div class="message"> <%= message %> </div>	
 <%	
 	} else if (menuItem != null) {
 		
@@ -36,7 +32,6 @@
 		String price = String.format("&#36;%.2f", menuItem.getPrice()); //&#36; html for $
 		String category = menuItem.getItemCategory().name().toLowerCase();
 %>
-		<h3> Menu Item Information </h3>
 		<table>
 			<thead> <tr> <th> Field </th> <th> Value </th> </tr> </thead>
 			<tbody>
@@ -47,8 +42,10 @@
 				<tr> <td> Category </td> <td> <%=category%> </td></tr>
 			</tbody>
 		</table>
+		
+		<a class="btn" href="<%= response.encodeURL(getServletContext().getContextPath() + "/menuItem/manage") %>"> Manage Menu Items </a>
 <%		}	
-%>	
-	</div>
+%>
+</main>
 </body>
 </html>

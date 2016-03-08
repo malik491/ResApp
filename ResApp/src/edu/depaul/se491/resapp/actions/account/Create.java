@@ -32,7 +32,7 @@ public class Create extends BaseAction {
 			return;
 		}
 		
-		String jspMsg = "";
+		String jspMsg = null;
 		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
 			AccountBean account = getAccountFromRequest(request);
 			account.setRole(AccountRole.EMPLOYEE);
@@ -47,7 +47,8 @@ public class Create extends BaseAction {
 			}
 		}
 		
-		request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
+		if (jspMsg != null)
+			request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
 		
 		String jspUrl = "/account/create.jsp";
 		getServletContext().getRequestDispatcher(jspUrl).forward(request, response);

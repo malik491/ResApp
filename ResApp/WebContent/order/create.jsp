@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@page import="edu.depaul.se491.utils.ParamLengths,edu.depaul.se491.utils.ParamLabels,edu.depaul.se491.utils.ParamPatterns,edu.depaul.se491.utils.ParamValues"%>
 <%@ page import="edu.depaul.se491.beans.MenuItemBean" %>
@@ -7,30 +7,30 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta charset="UTF-8">
 		<title>Create Order</title>
 		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/component.css"/>
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/demo.css"/>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 		<script src="${pageContext.request.contextPath}/js/createOrder.js"></script>
 	</head>
 <body>
-	<div class="component">
-	<h1>Create Order </h1>
-	<a href="${pageContext.request.contextPath}/home.jsp"> Home Page </a> <br> <br>
+<jsp:include page="/nav.jsp"></jsp:include>
+
+<main class="main">
+	<h3>Create Order </h3>
 <%
 	String msg = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	MenuItemBean[] menuItems = (MenuItemBean[]) request.getAttribute(ParamLabels.MenuItem.VISIBLE_MENU_ITEM_BEAN_LIST);
-	
 	if (msg != null) {
-%>		<h3><%=msg%></h3> 
+%>		<div class="message"><%=msg%></div> 
 <% 	}
+
 	if (menuItems == null || (menuItems.length == 0)) {
-%>		<h3>There are no menu items (empty menu)</h3>
+%>		<div class="message"> There are no menu items (empty menu) </div>
 <%	} else {
+		String submissionUrl = response.encodeURL(getServletContext().getContextPath() + "/order/create");
 %>
-		<h3>Order</h3>
-		<form id="createForm" action="${pageContext.request.contextPath}/order/create" method="POST">
+		<form class="form" id="createForm" action="<%= submissionUrl %>" method="POST">
 			<input type="hidden" name="<%=ParamLabels.Order.ID%>" value="0">
 			
 			<div>
@@ -136,7 +136,7 @@
 			</table>
 			</div>
 			
-			<div id="orderItemsMessage" style="color:red;font-weight:bold;"> All items have zero quantity !!</div>
+			<div id="orderItemsMessage"> At least one item should have none zero quantity</div>
 			
 			<div>
 			<h3> Order Items </h3>
@@ -170,6 +170,6 @@
 		</form>		
 <%	}
 %>
-	</div>
+</main>
 </body>
 </html>

@@ -1,27 +1,34 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="edu.depaul.se491.beans.AccountBean" %>
+<%@ page import="edu.depaul.se491.enums.AccountRole" %>
 <%@ page import="edu.depaul.se491.utils.ParamLabels" %>
+
 
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta charset="UTF-8">
 		<title>Delete Account</title>
 		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/component.css"/>
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/demo.css"/>
 	</head>
 <body>
-	<div class="component">
-	<h3> Delete Account </h3>
-	<br>
-	<a href="${pageContext.request.contextPath}/home.jsp"> Home Page </a> 
-	<br>
+<jsp:include page="/nav.jsp"></jsp:include>
 
+<main class="main"> 
+	<h3> Delete Account </h3>
 <%
 	String message = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	if (message != null) {
-%>		<h3> <%= message %> </h3>
+%>		<div class="message"> <%= message %> </div>
+<%	}
+	
+	AccountBean loggedInUser = (AccountBean) session.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
+	if (loggedInUser != null && loggedInUser.getRole() == AccountRole.MANAGER) {
+%>		<div style="margin-top:2%;"> 
+			<a class="btn" href="<%= response.encodeURL(getServletContext().getContextPath() + "/account/manage") %>"> Manage Accounts </a>
+		</div>
 <%	}
 %>
-	</div>
+</main>
 </body>
 </html>

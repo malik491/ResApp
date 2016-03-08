@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="edu.depaul.se491.beans.AccountBean,edu.depaul.se491.beans.CredentialsBean,edu.depaul.se491.beans.UserBean,edu.depaul.se491.beans.AddressBean" %>
 <%@ page import="edu.depaul.se491.enums.AccountRole,edu.depaul.se491.enums.AddressState" %>
 <%@ page import="edu.depaul.se491.utils.ParamLabels" %>
@@ -6,24 +6,23 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta charset="UTF-8">
 		<title>View Account</title>
 		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/component.css"/>
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/demo.css"/>
 	</head>
 <body>
-	<div class="component">
-	<h3> Account </h3>
-	
-	<a href="${pageContext.request.contextPath}/home.jsp"> Home Page </a> <br> <br>
+<jsp:include page="/nav.jsp"></jsp:include>
 
+<main class="main">
+	<h3> Account </h3>
 <%
 	String message = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	AccountBean account = (AccountBean) request.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
+	AccountRole loggedInRole = (AccountRole) request.getAttribute(ParamLabels.Account.ROLE);
 	
 	if (message != null) {
-%>		<h3> <%= message %></h3>		
-<%	} else  if (account != null){
+%>		<div class="message"> <%= message %></div>		
+<%	} else  if (account != null && loggedInRole != null){
 		CredentialsBean credentials = account.getCredentials();
 		AccountRole role = account.getRole();
 		UserBean user = account.getUser();
@@ -54,8 +53,13 @@
 				<tr> <td> Address </td> <td> <%= formatedAddr %> </td> </tr>
 			</tbody>
 		</table>
+		
+<%		if (loggedInRole == AccountRole.MANAGER) {
+%>			<a class="btn" href="<%= response.encodeURL(getServletContext().getContextPath() + "/account/manage") %>"> Manage Accounts </a>
+<%		}
+%>
 <%	} 
 %>	
-	</div>
+</main>
 </body>
 </html>

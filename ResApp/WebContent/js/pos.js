@@ -2,6 +2,7 @@
  * 
  */
  var currentOrder = null;
+ var isMenuLocked = false;
  
 function OrderBean() {
 	this.id = 0;
@@ -101,12 +102,13 @@ function getOrderItem(order, menuItemId) {
 		 currentOrder.payment = new PaymentBean('CASH');
 		 
 	 }
-	 
-	 var orderItem = getOrderItem(currentOrder, mItemId);
-	 var oldQuantity = orderItem.quantity;
-	 orderItem.quantity = oldQuantity + 1;
-	 
-	 updateOrderSummary(currentOrder);
+	 if (isMenuLocked === false) {
+		 var orderItem = getOrderItem(currentOrder, mItemId);
+		 var oldQuantity = orderItem.quantity;
+		 orderItem.quantity = oldQuantity + 1;
+		 
+		 updateOrderSummary(currentOrder);		 
+	 }
  }
  
  
@@ -122,47 +124,52 @@ function getOrderItem(order, menuItemId) {
 		var name = menuItem.name;
 		var quantity = oItem.quantity;
 		
-		var tableRow = getRow(id);
+		var orderItemDiv = getOrderItemDiv(id);
 
-		if (tableRow === undefined) {
+		if (orderItemDiv === undefined) {
 			if (quantity > 0) {
-				appendNewRow(id, name, quantity);
+				appendNewDiv(id, name, quantity);
 			}
 		} else if (quantity === 0){
-			$(tableRow).remove();
+			$(orderItemDiv).remove();
 		} else {
-			$($($(tableRow).children('td')[1]).children('input')[0]).val(quantity);
+			$($(orderItemDiv).children('input')[0]).val(quantity);
 		}
 	 }
  }
   
- function getRow(id) {
-	var rowId = '#id-' + id;	
-	return $(rowId).get(0);
+ function getOrderItemDiv(id) {
+	var divId = '#item-' + id;	
+	return $(divId).get(0);
  }
  
- function appendNewRow(id, name, qty) {
-	 var newRow = '<tr id="id-'+id+'"> <td>'+name+'</td>' 
-	 + '<td> <input type="number" min="1" max="500" step="1" value="'+qty
-	 	 +'" onClick="updateItemQuantity('+id+')" required> </td>' 
-	 + '<td> <button onClick="removeItem('+id+')"> remove </button> </td></tr>';
- 
-	$('.pos_summary_div_table').append(newRow);
+ function appendNewDiv(id, name, qty) {
+	 var newDiv = 
+		 '<div class="c_order-item" id="item-' + id + '">' +
+			'<div class="c_item-name">'+ name + '</div>' +
+			'<input class="c_item-qty" type="number" min="1" max="500" step="1" value="'+ qty + '" onClick="updateItemQuantity('+id+')" required="required">' +
+			'<img class="c_item-remove-icon" alt="remove icon" src="' + deleteIconURL + '" onClick="removeItem('+id+')">' +
+		'</div>';
+	$('#summary-order-items').append(newDiv);
  }
  
  function updateItemQuantity(id) {
-	 var oldItem = getOrderItem(currentOrder, id);
-	 var newQty = getIntValue($($($(getRow(id)).children('td')[1]).children('input')[0]).val());
-	 if (newQty !== NaN) {
-		 oldItem.quantity = newQty;
+	 if (isMenuLocked === false) {
+		 var oldItem = getOrderItem(currentOrder, id);
+		 var newQty = getIntValue($($(getOrderItemDiv(id)).children('input')[0]).val());
+		 if (newQty !== NaN) {
+			 oldItem.quantity = newQty;
+		 }
+		 updateOrderSummary(currentOrder);		 
 	 }
-	 updateOrderSummary(currentOrder);	 
  }
  
  function removeItem(id) {
-	 var oldItem = getOrderItem(currentOrder, id);
-	 oldItem.quantity = 0;
-	 updateOrderSummary(currentOrder);
+	 if (isMenuLocked === false) {
+		 var oldItem = getOrderItem(currentOrder, id);
+		 oldItem.quantity = 0;
+		 updateOrderSummary(currentOrder);	 
+	 }
  }
  
  
@@ -220,32 +227,132 @@ function isValidAddress(address) {
 	 return isAllZero;
  }
  
+
+ function removeMenuItem(id) {
+	 $('#menuItem-' + id).remove();
+ }
+
+ function addMenuItem(id, name) {
+	 var newDiv = '<div class="menu_item_button" id="menuItem-' + id +'" onClick="addOrderItem(' + id +')"> ' + name +' </div>';
+	 $("#menu-content").append(newDiv);
+ }
+
+ 
+ function updateMenu(newMenuList) {
+	 if (isMenuLocked === false) {
+		 isMenuLocked = true;
+		 var removeIds = [];
+		 
+		 var currentItems = menu.itemsList;
+
+		/* remove old items */
+		 for(var i=0; i < currentItems.length; i++) {
+			var oldItem = currentItems[i];
+			var found = false;
+			for (var j=0; j < newMenuList.length; j++) {
+				if (oldItem.id === newMenuList[j].id) {
+					found = true;
+					break;
+				}
+			}
+			
+			if (found === false) {
+				removeIds.push(oldItem.id);
+				removeMenuItem(oldItem.id);
+
+				if (currentOrder != null) {
+					var orderItems = currentOrder.orderItems;
+					var indx = -1;
+					for (var k=0; k < orderItems.length; k++) {
+						var oItem = orderItems[k];
+						if (oItem.menuItem.id === oldItem.id) {
+							indx = k;
+							break;
+						}
+					}
+					if (indx > -1) {
+						// remove item from order
+						currentOrder.orderItems.splice(indx, 1);
+						$('#item-' + oldItem.id).remove();
+					}
+				}
+			}
+		 }
+		 
+		/* add new items */
+		for(var i=0; i < newMenuList.length; i++) {
+			if (menu.get(newMenuList[i].id) === null) {
+				var add = true;
+				for (var j=0; j < removeIds.length; j++) {
+					if (removeIds[j] === newMenuList[i].id) {
+						add = false;
+					}
+				}
+				if (add === true) {
+					addMenuItem(newMenuList[i].id, newMenuList[i].name);
+				}
+			}
+		}
+		menu.itemsList = newMenuList;
+		updateOrderSummary(currentOrder);
+		isMenuLocked = false;
+	}
+ }
+ 
+ 
+ function ajaxFetchMenu() {
+	$.ajax({
+	   type: 'POST',
+	   url: ajaxFetchURL,
+	   dataType: 'JSON',
+	   success: 
+		   	function(data, textStatus, jqXHR) {
+	   			if (data.valid === undefined) {
+	   				alert('Malformed server response (ajax)');
+	   			} else if (data.valid === false) {
+		   			alert('failed to fetch menu: ' + data.message);
+		   		} else if (data.valid === true) {
+		   			updateMenu(data.itemsList);
+		   			setTimeout(ajaxFetchMenu, 15000);
+		   		}
+	    	},
+			error: 
+			  	function(data) {
+			       	alert('Error: AJAX in ajaxfetchMenu(). Check if the server is running');
+			}
+		});
+	}
+ 
+ 
+ 
  $(document).ready(function(){
 	 
-	$('#pos_order_address').hide();
-	$('#pos_order_creditcard').hide();
-
-	$('.pos_ordertype').hide();
-	$('.pos_paymenttype').hide();
-	$('.pos_overlay').hide();
+	$('#pos_order_address').css("visibility", "hidden");
+	$('#pos_order_creditcard').css("visibility", "hidden");
 	
-	$('#checkout_button').click(
+	$('#pos_ordertype').hide();
+	$('#pos_paymenttype').hide();
+	$('#pos_overlay').hide();
+	
+	$('#checkout-btn').click(
 		function(){
-			if (currentOrder !== null) {
+			if (currentOrder !== null && isMenuLocked === false) {
+				isMenuLocked = true;
 				if (isAllZeroQty(currentOrder.orderItems) === true) {
-					$('#clear_button').trigger('click');
+					$('#clear_btn').trigger('click');
+					isMenuLocked = false;
 				} else {
-					$('.pos_overlay').show(700); 
-					$('.pos_ordertype').show(800);					
+					$('#pos_overlay').show(700); 
+					$('#pos_ordertype').show(800);					
 				}
 			}
 	});
 
-	$('#clear_button').click(
+	$('#clear-btn').click(
 			function(){
 				if (currentOrder !== null) {
 					currentOrder = null;
-					$('.pos_summary_div_table > tbody > tr').each(function(){$(this).remove();});
+					$('#summary-order-items > div').each(function(){$(this).remove();});
 					$('#ordertype_pickup').trigger('click');
 					$('#paymenttype_cash').trigger('click');
 				}
@@ -262,8 +369,7 @@ function isValidAddress(address) {
 		$("input[name='address_city']").val('');
 		$("input[name='address_zipcode']").val('');
 
-		$('#pos_order_address').hide();
-
+		$('#pos_order_address').css("visibility", "hidden");
 	});
 	
 	$('#ordertype_delivery').click(function(){
@@ -271,7 +377,7 @@ function isValidAddress(address) {
 			currentOrder.type = 'DELIVERY';
 			currentOrder.address = new AddressBean();
 		}
-		$('#pos_order_address').show();				
+		$('#pos_order_address').css("visibility", "visible");			
 	});
 	
 	$('#paymenttype_cash').click(function(){
@@ -284,21 +390,21 @@ function isValidAddress(address) {
 		$("input[name='creditcard_month']").val('1');
 		$("input[name='creditcard_year']").val('2016');
 		
-		$('#pos_order_creditcard').hide();
+		$('#pos_order_creditcard').css("visibility", "hidden");
 	});
 	
 	$('#paymenttype_credit_card').click(function(){
 		if (currentOrder !== null) {
 			currentOrder.payment = new PaymentBean('CREDIT_CARD');
 		}
-		
-		$('#pos_order_creditcard').show();
+		$('#pos_order_creditcard').css("visibility", "visible");
 	});
 	
 	
 	$('#back-ordertype').click(function(){
-		$('.pos_ordertype').hide(700);
-		$('.pos_overlay').hide(800);
+		$('#pos_ordertype').hide(700);
+		$('#pos_overlay').hide(800);
+		isMenuLocked = false;
 	});
 	
 	
@@ -328,8 +434,8 @@ function isValidAddress(address) {
 			if (isValid === true) {
 				var total = getTotal(currentOrder);
 				$('#pos_order_total').text(''+ total);
-				$('.pos_ordertype').hide(200); 
-				$('.pos_paymenttype').show(700);	
+				$('#pos_ordertype').hide(200); 
+				$('#pos_paymenttype').show(700);	
 			} else {
 				alert('Invalid Address Data');
 			}
@@ -337,8 +443,8 @@ function isValidAddress(address) {
 	});
 	
 	$('#back-payment').click(function(){
-		$('.pos_paymenttype').hide(200);
-		$('.pos_ordertype').show(700);
+		$('#pos_paymenttype').hide(200);
+		$('#pos_ordertype').show(700);
 	});
 	
 	$('#done-payment').click(function(){
@@ -388,15 +494,16 @@ function isValidAddress(address) {
 					    	}
 				});
 				
-				$('#clear_button').trigger('click');
+				$('#clear-btn').trigger('click');
 				
-				$('.pos_paymenttype').hide(700);
-				$('.pos_overlay').hide(800);
-				
+				$('#pos_paymenttype').hide(700);
+				$('#pos_overlay').hide(800);
+				isMenuLocked = false;
 			} else {
 				alert('Invalid Credit Card Data');
 			}
 		}
 	});
 	
+	setTimeout(ajaxFetchMenu, 15000);
 });

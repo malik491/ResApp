@@ -52,8 +52,10 @@ public class View extends BaseAction {
 		
 		if (jspMsg != null)
 			request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
-		if (account != null)
+		if (account != null) {
 			request.setAttribute(ParamLabels.Account.ACCOUNT_BEAN, account);
+			request.setAttribute(ParamLabels.Account.ROLE, loggedinAccount.getRole());
+		}
 		
 		String jspUrl = "/account/view.jsp";
 		getServletContext().getRequestDispatcher(jspUrl).forward(request, response);

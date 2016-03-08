@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="edu.depaul.se491.utils.ParamLengths"%>
 <%@ page import="edu.depaul.se491.beans.MenuItemBean" %>
 <%@ page import="edu.depaul.se491.enums.MenuItemCategory" %>
@@ -7,23 +7,19 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta charset="UTF-8">
 		<title>Create Menu Item</title>
 		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/component.css"/>
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/demo.css"/>
 	</head>
 <body>
-	<div class="component">
+<jsp:include page="/nav.jsp"></jsp:include>
 
-	<h1> Create Menu Item </h1>
-	<a href="${pageContext.request.contextPath}/home.jsp"> Home Page </a> <br> <br>
+<main class="main">
+	<h3> Create Menu Item </h3>
 <% 
-
-	// get msg (set by servlet)
 	String jspMsg = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
-
 	if (jspMsg != null) {
-%>		<h3> <%= jspMsg %>	</h3>				
+%>		<div class="message"> <%= jspMsg %>	</div>				
 <%	}
 	
 	MenuItemCategory[] categories = MenuItemCategory.values();
@@ -32,9 +28,10 @@
 	
 	double priceMin = ParamValues.MenuItem.MIN_PRICE;
 	double priceMax = ParamValues.MenuItem.MAX_PRICE;
+	String submissionUrl = response.encodeURL(getServletContext().getContextPath() + "/menuItem/create");
 %>
-	<form id="addForm" action="${pageContext.request.contextPath}/menuItem/create" method="post">
-		<h3>Menu Item </h3>
+	<form class="form" id="addForm" action="<%= submissionUrl %>" method="post">
+		<h3> Menu Item Information </h3>
 		<table>
 			<thead> <tr> <th> Field </th> <th> Value </th></tr> </thead>
 			<tbody>
@@ -66,6 +63,6 @@
 		</table>
 		<input type="submit" value="Create Menu Item">
 	</form>
-	</div>
+</main>
 </body>
 </html>
