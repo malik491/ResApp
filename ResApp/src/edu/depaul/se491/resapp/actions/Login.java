@@ -39,24 +39,25 @@ public class Login extends BaseAction {
 			// try to log in user
 			String username = request.getParameter(ParamLabels.Credentials.USERNAME);
 			String password = request.getParameter(ParamLabels.Credentials.PASSWORD);
+			if (username != null && password != null) {
+				CredentialsBean credentials = new CredentialsBean(username, password);
+				boolean isValid = new CredentialsValidator().validate(credentials);
 
-			CredentialsBean credentials = new CredentialsBean(username, password);
-			boolean isValid = new CredentialsValidator().validate(credentials);
-
-			if (isValid) {
-				AccountServiceClient serviceClient = new AccountServiceClient(credentials, ACCOUT_WEB_SERVICE_URL);
-				account = serviceClient.get(credentials.getUsername());
-				
-				if (account == null) {
-					jspMsg = serviceClient.getResponseMessage();
-				} else {
-					synchronized (session) {
-						session.setAttribute(ParamLabels.Account.ACCOUNT_BEAN, account);
-						jspUrl = "/home.jsp";
+				if (isValid) {
+					AccountServiceClient serviceClient = new AccountServiceClient(credentials, ACCOUT_WEB_SERVICE_URL);
+					account = serviceClient.get(credentials.getUsername());
+					
+					if (account == null) {
+						jspMsg = serviceClient.getResponseMessage();
+					} else {
+						synchronized (session) {
+							session.setAttribute(ParamLabels.Account.ACCOUNT_BEAN, account);
+							jspUrl = "/home.jsp";
+						}
 					}
+				} else {
+					jspMsg = "Invalid login Credentials";
 				}
-			} else {
-				jspMsg = "Invalid login Credentials";
 			}
 		} else {
 			jspUrl = "/home.jsp";

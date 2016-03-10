@@ -24,9 +24,15 @@
 		<div class="message"> <%= message %> </div>	
 <%	
 	} else if (accounts != null) {
-		if (accounts.length == 0) {
+		int count = 0;
+		for (AccountBean account : accounts) {
+			if (account.getRole() != AccountRole.CUSTOMER_APP)
+				count++;
+		}
+		
+		if (count == 0) {
 %>		
-			<div class="message"> There Are No Employee Accounts to Manage </div>
+			<div class="message"> There Are No Accounts to Manage </div>
 <%		
 		} else {
 %>
@@ -34,35 +40,36 @@
 			<thead> <tr> <th> Account Username </th> <th> Account Role </th> <th> View </th><th> Update </th><th> Delete </th> </tr></thead>
 			<tbody>
 <%			for(AccountBean account: accounts){
-				String username = account.getCredentials().getUsername();
-				String role = account.getRole().name().toLowerCase();
+				if (account.getRole() != AccountRole.CUSTOMER_APP) {
+					String username = account.getCredentials().getUsername();
+					String role = account.getRole().name().toLowerCase();
 %>	
-				<tr>
-					<td><%=username%></td>
-					<td><%=role%></td>	
-					<td>
-						<form action="<%= response.encodeURL(getServletContext().getContextPath() + "/account/view") %>" method="POST">
-						<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
-						<input type="image" src="${pageContext.request.contextPath}/icons/ic_pageview_black_24px.svg" alt="view">
-						</form>
-					</td>
-					<td>
-						<form action="<%= response.encodeURL(getServletContext().getContextPath() + "/account/update") %>" method="POST">
-						<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
-						<input type="image" src="${pageContext.request.contextPath}/icons/ic_update_black_24px.svg" alt="update">
-						</form>
-					</td>
-					<td>
-						<form action="<%= response.encodeURL(getServletContext().getContextPath() + "/account/delete") %>" method="POST">
-						<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
-						<input type="image" src="${pageContext.request.contextPath}/icons/ic_delete_black_24px.svg" alt="delete">
-						</form>
-					</td>								
-				</tr>
-<%			}
-%>		
-			</tbody>
-		</table>
+					<tr>
+						<td><%=username%></td>
+						<td><%=role%></td>	
+						<td>
+							<form action="<%= response.encodeURL(getServletContext().getContextPath() + "/account/view") %>" method="POST">
+							<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
+							<input type="image" src="${pageContext.request.contextPath}/icons/ic_pageview_black_24px.svg" alt="view">
+							</form>
+						</td>
+						<td>
+							<form action="<%= response.encodeURL(getServletContext().getContextPath() + "/account/update") %>" method="POST">
+							<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
+							<input type="image" src="${pageContext.request.contextPath}/icons/ic_update_black_24px.svg" alt="update">
+							</form>
+						</td>
+						<td>
+							<form action="<%= response.encodeURL(getServletContext().getContextPath() + "/account/delete") %>" method="POST">
+							<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=username%>">
+							<input type="image" src="${pageContext.request.contextPath}/icons/ic_delete_black_24px.svg" alt="delete">
+							</form>
+						</td>								
+					</tr>
+<%				}
+			}
+%>		</tbody>
+		</table>					
 <%		}
 	}
 %>

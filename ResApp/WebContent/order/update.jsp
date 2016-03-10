@@ -136,7 +136,7 @@
 				<tr> <td> Zipcode </td> 
 					 <td> <input type="text" name="<%=ParamLabels.Address.ZIP_CODE%>" value="<%=orderAddress == null? "" : orderAddress.getZipcode()%>" 
 					 			 pattern="<%=ParamPatterns.Address.ZIPCODE%>" 
-					 			 title="digit string. length <%=ParamLengths.Address.MIN_ZIPCODE%>-<%=ParamLengths.Address.MAX_ZIPCODE%>" required="required"> 
+					 			 title="plain <%=ParamLengths.Address.MIN_ZIPCODE%>-<%=ParamLengths.Address.MAX_ZIPCODE%> digits" required="required"> 
 					 </td> 
 				</tr>
 				</tbody>

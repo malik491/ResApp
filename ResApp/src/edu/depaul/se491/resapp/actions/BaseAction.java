@@ -418,7 +418,14 @@ public class BaseAction extends HttpServlet {
 		
 		address.setId(getIdFromRequest(request, ParamLabels.Address.ID, 0));
 		address.setLine1(request.getParameter(ParamLabels.Address.LINE_1));
-		address.setLine2(request.getParameter(ParamLabels.Address.LINE_2));
+		
+		String line2 = request.getParameter(ParamLabels.Address.LINE_2);
+		if (line2 != null) {
+			line2 = line2.trim();
+			line2 = line2.length() > 0? line2 : null;
+		}
+		address.setLine2(line2);
+		
 		address.setCity(request.getParameter(ParamLabels.Address.CITY));
 		address.setState(getAddressStateFromRequest(request));
 		address.setZipcode(request.getParameter(ParamLabels.Address.ZIP_CODE));

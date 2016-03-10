@@ -34,6 +34,7 @@ public class Manage extends BaseAction {
 		String jspMsg = null;
 		MenuItemBean[] visibleMenuItems = null;
 		MenuItemBean[] hiddenMenuItems = null;
+		
 		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
 			MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENU_WEB_SERVICE_URL);
 			visibleMenuItems = serviceClient.getAllVisible();

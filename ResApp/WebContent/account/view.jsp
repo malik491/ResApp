@@ -18,11 +18,12 @@
 <%
 	String message = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	AccountBean account = (AccountBean) request.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
-	AccountRole loggedInRole = (AccountRole) request.getAttribute(ParamLabels.Account.ROLE);
+	
+	AccountBean loggedInUser = (AccountBean) session.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
 	
 	if (message != null) {
 %>		<div class="message"> <%= message %></div>		
-<%	} else  if (account != null && loggedInRole != null){
+<%	} else  if (account != null && loggedInUser != null){
 		CredentialsBean credentials = account.getCredentials();
 		AccountRole role = account.getRole();
 		UserBean user = account.getUser();
@@ -54,7 +55,7 @@
 			</tbody>
 		</table>
 		
-<%		if (loggedInRole == AccountRole.MANAGER) {
+<%		if (loggedInUser.getRole() == AccountRole.MANAGER || loggedInUser.getRole() == AccountRole.ADMIN) {
 %>			<a class="btn" href="<%= response.encodeURL(getServletContext().getContextPath() + "/account/manage") %>"> Manage Accounts </a>
 <%		}
 %>

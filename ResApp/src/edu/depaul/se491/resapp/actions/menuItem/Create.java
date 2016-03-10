@@ -32,17 +32,18 @@ public class Create extends BaseAction {
 		}
 
 		String jspMsg = null;
-		MenuItemBean menuItem = null; 
-
+		
 		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
-			String menuItemName = (String)request.getParameter(ParamLabels.MenuItem.NAME);
-				if(menuItemName != null)
-				{
-					menuItem = getMenuItemFromRequest(request);
+			MenuItemBean menuItem = getMenuItemFromRequest(request); 
+			if (menuItem.getItemCategory() != null) {
+				if (isValidMenuItemBean(menuItem, true)) {
 					MenuServiceClient serviceClient = new MenuServiceClient(loggedinAccount.getCredentials(), MENU_WEB_SERVICE_URL);
-					menuItem = serviceClient.post(menuItem);
-					jspMsg =(menuItem == null) ? serviceClient.getResponseMessage() : "Successfully created new menu item";
+					MenuItemBean createdItem = serviceClient.post(menuItem);
+					jspMsg =(createdItem == null) ? serviceClient.getResponseMessage() : "Successfully created new menu item";	
+				} else {
+					jspMsg = "Invalid New Menu Item Data";
 				}
+			}
 		}
 		
 		if (jspMsg != null)

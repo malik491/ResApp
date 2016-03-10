@@ -32,7 +32,7 @@ public class Delete extends BaseAction {
 		
 		String jspMsg = null;
 		
-		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
+		if (loggedinAccount.getRole() == AccountRole.MANAGER || loggedinAccount.getRole() == AccountRole.ADMIN) {
 			String username = (String) request.getParameter(ParamLabels.Credentials.USERNAME);
 			boolean isValid = new CredentialsValidator().isValidUsername(username);
 			if (isValid) {

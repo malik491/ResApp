@@ -61,7 +61,7 @@
 					 		rows="10" cols="50" maxLength="<%=descriptionMax%>" required="required"><%=description%></textarea> 
 					 </td>
 				</tr>
-				<tr> <td> Unit Price ($<%=priceMin%> - $<%=priceMax%>)</td> 
+				<tr> <td> Unit Price (&#36;<%=priceMin%> - &#36;<%=priceMax%>)</td> 
 					 <td> 
 					 	&#36;<input type="number" min="<%=priceMin%>" max="<%=priceMax%>" step="any" name="<%=ParamLabels.MenuItem.PRICE%>" 
 					 	value="<%=price%>" required="required">

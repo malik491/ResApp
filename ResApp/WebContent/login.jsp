@@ -31,18 +31,7 @@
 			<br>
 			<input type="submit" value="Log in">
 		</form>
-		</div>
-		
-		<div>
-		<h3> Account data for testing </h3>
-		<table> 
-			<thead> <tr> <th> Account Username </th> <th> Account Password </th> </tr> </thead>
-			<tbody>
-				<tr> <td> manager </td> <td> password </td> </tr>
-				<tr> <td> employee1 </td> <td> password </td> </tr>
-			</tbody>
-		</table>
-		</div>		
+		</div>	
 	</section>
 </main>
 <body>

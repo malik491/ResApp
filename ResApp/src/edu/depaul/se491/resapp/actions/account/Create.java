@@ -33,17 +33,20 @@ public class Create extends BaseAction {
 		}
 		
 		String jspMsg = null;
-		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
+		if (loggedinAccount.getRole() == AccountRole.MANAGER || loggedinAccount.getRole() == AccountRole.ADMIN) {
 			AccountBean account = getAccountFromRequest(request);
-			account.setRole(AccountRole.EMPLOYEE);
-			
-			if (isValidAccountBean(account, true)) {
-				AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
-				account = serviceClient.post(account);
-				if (account == null)
-					jspMsg = serviceClient.getResponseMessage();
-				else
-					jspMsg = "Successfully created new account";
+			if (account.getCredentials().getUsername() != null) {
+				if (loggedinAccount.getRole() == AccountRole.MANAGER) {
+					account.setRole(AccountRole.EMPLOYEE);
+
+					if (isValidAccountBean(account, true)) {
+						AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
+						account = serviceClient.post(account);
+						jspMsg = (account == null)? serviceClient.getResponseMessage() : "Successfully created new account";
+					} else {
+						jspMsg = "Invalid New Account Data";
+					}		
+				}
 			}
 		}
 		

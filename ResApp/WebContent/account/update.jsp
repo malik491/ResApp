@@ -56,7 +56,7 @@
 				<tbody>
 					<tr> <td>  </td> <td> </td> </tr>
 					<tr> <td> Username </td> <td> <%=credentials.getUsername()%> </td> </tr>
-					<tr> <td> Password </td> <td> <input type="text" name="<%=ParamLabels.Credentials.PASSWORD%>" value="<%=credentials.getPassword()%>" pattern="<%=password%>" title="account password" required="required"> </td> </tr>
+					<tr> <td> Password </td> <td> <input type="text" name="<%=ParamLabels.Credentials.PASSWORD%>" value="<%=credentials.getPassword()%>" pattern="<%=password%>" title="length <%=ParamLengths.Credentials.MIN_PASSWORD%>-<%=ParamLengths.Credentials.MAX_PASSWORD%>" required="required"> </td> </tr>
 					<tr> <td> Role </td> <td> <%= role.name().toLowerCase()%></td> </tr>
 				</tbody>
 			</table>					
@@ -65,10 +65,10 @@
 			<table>
 				<thead> <tr> <th> Filed </th> <th> Value </th> </tr> </thead>
 				<tbody>
-					<tr> <td> First name </td> <td> <input type="text" name="<%=ParamLabels.User.F_NAME%>" value="<%=user.getFirstName()%>" pattern="<%=fName%>" title="first name" required="required"> </td> </tr>
-					<tr> <td> Last name </td> <td> 	<input type="text" name="<%=ParamLabels.User.L_NAME%>" value="<%=user.getLastName()%>" 	pattern="<%=lName%>" title="last name" required="required"> </td> </tr>
-					<tr> <td> Email </td> <td> 		<input type="text" name="<%=ParamLabels.User.EMAIL%>"  value="<%=user.getEmail()%>" 	pattern="<%=email%>" title="email" required="required"> </td> </tr>
-					<tr> <td> Phone </td> <td> 		<input type="text" name="<%=ParamLabels.User.PHONE%>"  value="<%=user.getPhone()%>" 	pattern="<%=phone%>" title="phone" required="required"> </td> </tr>
+					<tr> <td> First name </td> <td> <input type="text" name="<%=ParamLabels.User.F_NAME%>" value="<%=user.getFirstName()%>" pattern="<%=fName%>" title="length <%=ParamLengths.User.MIN_F_NAME%>-<%=ParamLengths.User.MAX_F_NAME%>" required="required"> </td> </tr>
+					<tr> <td> Last name </td> <td> 	<input type="text" name="<%=ParamLabels.User.L_NAME%>" value="<%=user.getLastName()%>" 	pattern="<%=lName%>" title="length <%=ParamLengths.User.MIN_L_NAME%>-<%=ParamLengths.User.MAX_L_NAME%>" required="required"> </td> </tr>
+					<tr> <td> Email </td> <td> 		<input type="text" name="<%=ParamLabels.User.EMAIL%>"  value="<%=user.getEmail()%>" 	pattern="<%=email%>" title="lengths: 1-35@1-10.2-3" required="required"> </td> </tr>
+					<tr> <td> Phone </td> <td> 		<input type="text" name="<%=ParamLabels.User.PHONE%>"  value="<%=user.getPhone()%>" 	pattern="<%=phone%>" title="plain  <%=ParamLengths.User.MIN_PHONE%>-<%=ParamLengths.User.MAX_PHONE%> digits (e.g, 1234567890)" required="required"> </td> </tr>
 				</tbody>
 			</table>
 			
@@ -76,9 +76,9 @@
 			<table>
 				<thead> <tr> <th> Filed </th> <th> Value </th> </tr> </thead>
 				<tbody>
-					<tr> <td> Line 1 </td> <td> <input type="text" name="<%=ParamLabels.Address.LINE_1%>" value="<%=address.getLine1()%>" 	pattern="<%=line1%>" title="street address" required="required"> </td> </tr>
-					<tr> <td> Line 2 </td> <td> <input type="text" name="<%=ParamLabels.Address.LINE_2%>" value="<%=address.getLine2()== null? "" : address.getLine2()%>" 	maxLength="<%=ParamLengths.Address.MAX_LINE2%>"> </td> </tr>
-					<tr> <td> City </td> <td> 	<input type="text" name="<%=ParamLabels.Address.CITY%>"   value="<%=address.getCity()%>"	pattern="<%=city%>" title="city" required="required"> </td> </tr>
+					<tr> <td> Line 1 </td> <td> <input type="text" name="<%=ParamLabels.Address.LINE_1%>" value="<%=address.getLine1()%>" 	pattern="<%=line1%>" title="length <%=ParamLengths.Address.MIN_LINE1%>-<%=ParamLengths.Address.MAX_LINE1%>" required="required"> </td> </tr>
+					<tr> <td> Line 2 </td> <td> <input type="text" name="<%=ParamLabels.Address.LINE_2%>" value="<%=address.getLine2()== null? "" : address.getLine2()%>" maxLength="<%=ParamLengths.Address.MAX_LINE2%>"> </td> </tr>
+					<tr> <td> City </td> <td> 	<input type="text" name="<%=ParamLabels.Address.CITY%>"   value="<%=address.getCity()%>" pattern="<%=city%>" title="length <%=ParamLengths.Address.MIN_CITY%>-<%=ParamLengths.Address.MAX_CITY%>" required="required"> </td> </tr>
 					<tr> <td> State </td> 
 						 <td><select form="updateForm" name="<%=ParamLabels.Address.STATE%>" required="required">
 <%							for(AddressState state: states) {
@@ -86,14 +86,14 @@
 <%							}
 %>						</select></td>				
 					</tr>					
-					<tr> <td> Zipcode </td> <td> <input type="text" name="<%=ParamLabels.Address.ZIP_CODE%>" value="<%=address.getZipcode()%>"	pattern="<%=zipcode%>" title="zipcode" required="required"> </td> </tr>
+					<tr> <td> Zipcode </td> <td> <input type="text" name="<%=ParamLabels.Address.ZIP_CODE%>" value="<%=address.getZipcode()%>"	pattern="<%=zipcode%>" title="plain <%=ParamLengths.Address.MIN_ZIPCODE%>-<%=ParamLengths.Address.MAX_ZIPCODE%> digits" required="required"> </td> </tr>
 				</tbody>
 			</table>
 			<input type="submit" value ="Update Account"> 
 		</form>
 <%	
 		AccountBean loggedInUser = (AccountBean) session.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
-		if (loggedInUser != null && loggedInUser.getRole() == AccountRole.MANAGER) {
+		if (loggedInUser != null && (loggedInUser.getRole() == AccountRole.MANAGER ||  loggedInUser.getRole() == AccountRole.ADMIN)) {
 %>			<a class="btn" href="<%= response.encodeURL(getServletContext().getContextPath() + "/account/manage") %>"> Manage Accounts </a>
 <%		}
 	}

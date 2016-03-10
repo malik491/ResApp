@@ -34,7 +34,7 @@ public class Manage extends BaseAction {
 		
 		String jspMsg = null;
 		AccountBean[] accounts = null;
-		if (loggedinAccount.getRole() == AccountRole.MANAGER) {
+		if (loggedinAccount.getRole() == AccountRole.MANAGER || loggedinAccount.getRole() == AccountRole.ADMIN) {
 			AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
 			accounts = serviceClient.getAll();
 			jspMsg = (accounts == null)? serviceClient.getResponseMessage() : null;	

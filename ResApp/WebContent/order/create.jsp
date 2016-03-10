@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
-<%@page import="edu.depaul.se491.utils.ParamLengths,edu.depaul.se491.utils.ParamLabels,edu.depaul.se491.utils.ParamPatterns,edu.depaul.se491.utils.ParamValues"%>
-<%@ page import="edu.depaul.se491.beans.MenuItemBean" %>
-<%@ page import="edu.depaul.se491.enums.OrderStatus,edu.depaul.se491.enums.OrderItemStatus, edu.depaul.se491.enums.OrderType,edu.depaul.se491.enums.AddressState, edu.depaul.se491.enums.PaymentType" %>
+<%@ page import="edu.depaul.se491.beans.MenuItemBean,edu.depaul.se491.beans.AccountBean" %>
+<%@ page import="edu.depaul.se491.enums.*" %>
+<%@page import="edu.depaul.se491.utils.*"%>
 
 <!DOCTYPE html>
 <html>
@@ -21,6 +21,7 @@
 <%
 	String msg = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	MenuItemBean[] menuItems = (MenuItemBean[]) request.getAttribute(ParamLabels.MenuItem.VISIBLE_MENU_ITEM_BEAN_LIST);
+	
 	if (msg != null) {
 %>		<div class="message"><%=msg%></div> 
 <% 	}
@@ -96,7 +97,7 @@
 				</tr>
 				<tr> <td> Zipcode </td> 
 					 <td> <input type="text" name="<%=ParamLabels.Address.ZIP_CODE%>" pattern="<%=ParamPatterns.Address.ZIPCODE%>" 
-					 			 title="digit string. length <%=ParamLengths.Address.MIN_ZIPCODE%>-<%=ParamLengths.Address.MAX_ZIPCODE%>" required="required"> 
+					 			 title="plain <%=ParamLengths.Address.MIN_ZIPCODE%>-<%=ParamLengths.Address.MAX_ZIPCODE%> digits" required="required"> 
 					 </td> 
 				</tr>
 			</tbody>
@@ -111,7 +112,7 @@
 				<tr> <td> Number </td> 
 					 <td> <input type="text" name="<%=ParamLabels.CreditCard.NUMBER%>" 
 					 		pattern="<%=ParamPatterns.CreditCard.NUMBER%>" 
-					 		title="digit string. length <%=ParamLengths.CreditCard.MIN_NUMBER%>-<%=ParamLengths.CreditCard.MAX_NUMBER%>" required="required"> 
+					 		title="plain <%=ParamLengths.CreditCard.MIN_NUMBER%>-<%=ParamLengths.CreditCard.MAX_NUMBER%> digits" required="required"> 
 					 </td> 
 				</tr>
 				<tr> <td> Holder Name </td> 

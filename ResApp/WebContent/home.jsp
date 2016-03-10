@@ -20,7 +20,15 @@ if (loggedInAccount == null) {
 <jsp:include page="/nav.jsp"></jsp:include>
 
 <main class="main">
-<%	if (loggedInAccount.getRole() == AccountRole.MANAGER) {
+<%	if (loggedInAccount.getRole() == AccountRole.ADMIN) {
+%>
+		<h3> Account </h3>
+		<div>
+			<a class="btn" href="<%=response.encodeURL(getServletContext().getContextPath() + "/account/manage")%>"> Manage Accounts </a>	
+			<a class="btn" href="<%=response.encodeURL(getServletContext().getContextPath() + "/account/create")%>"> Create Accounts </a>
+		</div>
+<%	
+	} else if (loggedInAccount.getRole() == AccountRole.MANAGER) {
 %>
 		<h3> Account </h3>
 		<div>

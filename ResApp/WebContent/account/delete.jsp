@@ -23,7 +23,7 @@
 <%	}
 	
 	AccountBean loggedInUser = (AccountBean) session.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
-	if (loggedInUser != null && loggedInUser.getRole() == AccountRole.MANAGER) {
+	if (loggedInUser != null && (loggedInUser.getRole() == AccountRole.MANAGER ||  loggedInUser.getRole() == AccountRole.ADMIN)) {
 %>		<div style="margin-top:2%;"> 
 			<a class="btn" href="<%= response.encodeURL(getServletContext().getContextPath() + "/account/manage") %>"> Manage Accounts </a>
 		</div>

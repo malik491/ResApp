@@ -65,8 +65,8 @@ public class Update extends BaseAction {
 			// reload own account
 			updatedAccount = loggedinAccount;							
 
-		} else if (loggedinAccount.getRole() == AccountRole.MANAGER) {
-			// manager can update other's account
+		} else if (loggedinAccount.getRole() == AccountRole.MANAGER || loggedinAccount.getRole() == AccountRole.ADMIN) {
+			// manager & admin can update other's account
 			AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
 			
 			if (isValidAccountBean(updatedAccount, false)) 

@@ -40,8 +40,7 @@ public class View extends BaseAction {
 		String username = (String) request.getParameter(ParamLabels.Credentials.USERNAME);
 		String jspMsg = null;
 		
-		if (loggedinAccount.getRole() == AccountRole.MANAGER && username != null) {
-			// validate username and then look up account (clicked 'view' from manage.jsp)
+		if ((loggedinAccount.getRole() == AccountRole.MANAGER || loggedinAccount.getRole() == AccountRole.ADMIN) && username != null) {
 			boolean isValid = new CredentialsValidator().isValidUsername(username);
 			if (isValid) {
 				AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
@@ -52,10 +51,8 @@ public class View extends BaseAction {
 		
 		if (jspMsg != null)
 			request.setAttribute(ParamLabels.JspMsg.MSG, jspMsg);
-		if (account != null) {
+		if (account != null)
 			request.setAttribute(ParamLabels.Account.ACCOUNT_BEAN, account);
-			request.setAttribute(ParamLabels.Account.ROLE, loggedinAccount.getRole());
-		}
 		
 		String jspUrl = "/account/view.jsp";
 		getServletContext().getRequestDispatcher(jspUrl).forward(request, response);
