@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
-  <display-name>ResApp</display-name>
+  <display-name>restaurantapp</display-name>
   <welcome-file-list>
     <welcome-file>login.jsp</welcome-file>
   </welcome-file-list>
-  
   <context-param>
-  	<param-name>web-service-hostname</param-name>
-  	<param-value>localhost</param-value>
+    <param-name>web-service-hostname</param-name>
+    <param-value>localhost</param-value>
   </context-param>
   <context-param>
-  	<param-name>web-service-port</param-name>
-  	<param-value>80</param-value>
+    <param-name>web-service-port</param-name>
+    <param-value>80</param-value>
   </context-param>
   <context-param>
-  	<param-name>web-service-appname</param-name>
-  	<param-value>CoreApp</param-value>
+    <param-name>web-service-appname</param-name>
+    <param-value>coreapp</param-value>
   </context-param>
-  
 </web-app>
