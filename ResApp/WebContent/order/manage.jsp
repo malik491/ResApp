@@ -35,8 +35,6 @@
 				String type = order.getType().name().toLowerCase();
 				String status = order.getStatus().name().toLowerCase();
 %>
-				<!--  print row for this order -->
-				
 				<tr>
 					<td><%=orderId%></td>
 					<td><%=type%></td>

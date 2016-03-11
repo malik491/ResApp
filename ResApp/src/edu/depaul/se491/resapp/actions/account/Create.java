@@ -38,15 +38,15 @@ public class Create extends BaseAction {
 			if (account.getCredentials().getUsername() != null) {
 				if (loggedinAccount.getRole() == AccountRole.MANAGER) {
 					account.setRole(AccountRole.EMPLOYEE);
-
-					if (isValidAccountBean(account, true)) {
-						AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
-						account = serviceClient.post(account);
-						jspMsg = (account == null)? serviceClient.getResponseMessage() : "Successfully created new account";
-					} else {
-						jspMsg = "Invalid New Account Data";
-					}		
 				}
+
+				if (isValidAccountBean(account, true)) {
+					AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
+					account = serviceClient.post(account);
+					jspMsg = (account == null)? serviceClient.getResponseMessage() : "Successfully created new account";
+				} else {
+					jspMsg = "Invalid New Account Data";
+				}		
 			}
 		}
 		

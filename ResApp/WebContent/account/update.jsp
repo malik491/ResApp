@@ -19,6 +19,8 @@
 <% 
 	String jspMsg = (String) request.getAttribute(ParamLabels.JspMsg.MSG);
 	AccountBean account = (AccountBean) request.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
+	AccountBean loggedInUser = (AccountBean) session.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
+	
 	if (jspMsg != null) {
 %>		<div class="message"> <%= jspMsg %>	</div>	
 <%	}
@@ -36,20 +38,24 @@
 	
 	AddressState[] states = AddressState.values();
 	
-	if (account != null){
+	if (account != null && loggedInUser != null){
 		AccountRole role = account.getRole();
 		CredentialsBean credentials = account.getCredentials();
 		UserBean user = account.getUser();
 		AddressBean address = user.getAddress();
 		String submissionUrl = response.encodeURL(getServletContext().getContextPath() + "/account/update");
+		
+		boolean hideRoleOptions = loggedInUser.getRole() == role || loggedInUser.getRole() != AccountRole.ADMIN;
 %>
 		
 		<form class="form" id="updateForm" action="<%=submissionUrl%>" method="POST">
 			<input type="hidden" name="<%=ParamLabels.Credentials.USERNAME%>" value="<%=credentials.getUsername()%>">
-			<input type="hidden" name="<%=ParamLabels.Account.ROLE%>" value="<%=role.name()%>">
 			<input type="hidden" name="<%=ParamLabels.User.ID%>" value="<%=user.getId()%>">	
 			<input type="hidden" name="<%=ParamLabels.Address.ID%>" value="<%=address.getId()%>">	
-
+<%			if (hideRoleOptions) {
+%>				<input type="hidden" name="<%=ParamLabels.Account.ROLE%>" value="<%=role.name()%>">	
+<%			}
+%>
 			<h3>Account Information </h3>
 			<table>
 				<thead> <tr> <th> Filed </th> <th> Value </th> </tr> </thead>
@@ -57,7 +63,17 @@
 					<tr> <td>  </td> <td> </td> </tr>
 					<tr> <td> Username </td> <td> <%=credentials.getUsername()%> </td> </tr>
 					<tr> <td> Password </td> <td> <input type="text" name="<%=ParamLabels.Credentials.PASSWORD%>" value="<%=credentials.getPassword()%>" pattern="<%=password%>" title="length <%=ParamLengths.Credentials.MIN_PASSWORD%>-<%=ParamLengths.Credentials.MAX_PASSWORD%>" required="required"> </td> </tr>
-					<tr> <td> Role </td> <td> <%= role.name().toLowerCase()%></td> </tr>
+					<tr> <td> Role </td>
+<%					if (hideRoleOptions) {
+%>					 	<td> <%=role.name().toLowerCase()%></td>
+<%					} else {
+%>						<td><select form="updateForm" name="<%=ParamLabels.Account.ROLE%>" required="required">
+								<option value="<%=AccountRole.MANAGER.name()%>" <%if(role == AccountRole.MANAGER){%> selected="selected" <%} %> > <%=AccountRole.MANAGER.name().toLowerCase()%> </option>
+								<option value="<%=AccountRole.EMPLOYEE.name()%>" <%if(role == AccountRole.EMPLOYEE){%> selected="selected" <%} %>> <%=AccountRole.EMPLOYEE.name().toLowerCase()%> </option>
+							</select>
+						</td>
+<%					}
+%>					</tr>
 				</tbody>
 			</table>					
 
@@ -92,7 +108,6 @@
 			<input type="submit" value ="Update Account"> 
 		</form>
 <%	
-		AccountBean loggedInUser = (AccountBean) session.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
 		if (loggedInUser != null && (loggedInUser.getRole() == AccountRole.MANAGER ||  loggedInUser.getRole() == AccountRole.ADMIN)) {
 %>			<a class="btn" href="<%= response.encodeURL(getServletContext().getContextPath() + "/account/manage") %>"> Manage Accounts </a>
 <%		}

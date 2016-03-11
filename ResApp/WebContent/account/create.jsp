@@ -57,8 +57,7 @@
 							</select>
 						</td>
 <%					}
-%>					
-					</tr>
+%>					</tr>
 				</tbody> 
 			</table>
 
