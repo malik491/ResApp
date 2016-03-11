@@ -49,7 +49,7 @@
 					<tr> <td> Password </td> <td> <input type="text" name="<%=ParamLabels.Credentials.PASSWORD%>" pattern="<%=password%>" title="length <%=ParamLengths.Credentials.MIN_PASSWORD%>-<%=ParamLengths.Credentials.MAX_PASSWORD%>" required="required" /> </td> </tr>
 					<tr> <td> Role </td>
 <%					if (loggedInUser.getRole() == AccountRole.MANAGER) {
-%>					 	<td> <%=AccountRole.EMPLOYEE.name().toLowerCase()%></td></tr>	
+%>					 	<td> <%=AccountRole.EMPLOYEE.name().toLowerCase()%></td>	
 <%					} else {
 %>						<td><select form="createForm" name="<%=ParamLabels.Account.ROLE%>" required="required">
 								<option value="<%=AccountRole.MANAGER.name()%>"> <%=AccountRole.MANAGER.name().toLowerCase()%> </option>
@@ -58,6 +58,7 @@
 						</td>
 <%					}
 %>					
+					</tr>
 				</tbody> 
 			</table>
 
