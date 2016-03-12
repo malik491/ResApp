@@ -1,6 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page session="false" %>
 <%@ page import="edu.depaul.se491.utils.ParamLabels,edu.depaul.se491.utils.ParamPatterns" %>
+<%@ page import="edu.depaul.se491.beans.AccountBean" %>
+<%@ page import="edu.depaul.se491.enums.AccountRole" %>
+<%
+HttpSession session = request.getSession(false);
+AccountBean loggedInAccount = session == null? null : (AccountBean) session.getAttribute(ParamLabels.Account.ACCOUNT_BEAN);
+if (loggedInAccount != null) {
+	response.sendRedirect(getServletContext().getContextPath() + "/login");
+} else {
+%>
 
 <!DOCTYPE html>
 <html>
@@ -38,3 +47,4 @@
 
 </body>
 </html>
+<%}%>
