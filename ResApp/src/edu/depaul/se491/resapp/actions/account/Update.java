@@ -61,7 +61,7 @@ public class Update extends BaseAction {
 					}
 					loggedinAccount = updatedAccount;
 				}
-			} 
+			}
 			// reload own account
 			updatedAccount = loggedinAccount;							
 
@@ -72,8 +72,7 @@ public class Update extends BaseAction {
 			if (isValidAccountBean(updatedAccount, false)) 
 			{	
 				Boolean updated = serviceClient.update(updatedAccount);	
-				jspMsg = (updated == null)? serviceClient.getResponseMessage() : "Successfully updated account";
-				
+				jspMsg = (updated == null)? serviceClient.getResponseMessage() : "Successfully updated account";	
 			} else {
 				// load account to update
 				updatedAccount = serviceClient.get(updatedAccount.getCredentials().getUsername());
