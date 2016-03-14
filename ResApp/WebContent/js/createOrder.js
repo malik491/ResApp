@@ -176,8 +176,9 @@ function isValidCCPayment(ccPayment) {
 	if (isNaN(ccPayment.expYear) || ccPayment.expYear < currentYear || ccPayment.expYear > currentYear + 20)
 		 return false;
 
-	var currentMonth = new Date().getMonth();
-	if (ccPayment.expYear === currentYear && ccPayment.expMonth < currentMonth)
+
+	var currentMonth = new Date().getMonth(); // zero based month
+	if (ccPayment.expYear === currentYear && ccPayment.expMonth < (currentMonth + 1))
 		return false;
 	
 	return true;
