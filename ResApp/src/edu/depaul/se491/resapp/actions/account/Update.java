@@ -61,7 +61,9 @@ public class Update extends BaseAction {
 					}
 					loggedinAccount = updatedAccount;
 				}
-			}
+			}  else {
+				jspMsg = "Invalid New Account Data (reloaded old valid data)";
+			} 
 			// reload own account
 			updatedAccount = loggedinAccount;							
 
@@ -69,14 +71,22 @@ public class Update extends BaseAction {
 			// manager & admin can update other's account
 			AccountServiceClient serviceClient = new AccountServiceClient(loggedinAccount.getCredentials(), ACCOUT_WEB_SERVICE_URL);
 			
-			if (isValidAccountBean(updatedAccount, false)) 
-			{	
+			boolean isValid = isValidAccountBean(updatedAccount, false);
+			
+			if (isValid) {	
 				Boolean updated = serviceClient.update(updatedAccount);	
-				jspMsg = (updated == null)? serviceClient.getResponseMessage() : "Successfully updated account";	
+				jspMsg = (updated == null)? serviceClient.getResponseMessage() : "Successfully updated account";
+				
 			} else {
+				if (updatedAccount.getCredentials().getPassword() != null)
+					jspMsg = "Invalid New Account Data (reloaded old valid data)";
+				
 				// load account to update
 				updatedAccount = serviceClient.get(updatedAccount.getCredentials().getUsername());
-				jspMsg = (updatedAccount == null)? serviceClient.getResponseMessage() : null;
+				if (updatedAccount == null) {
+					String serviceClientMsg = serviceClient.getResponseMessage();
+					jspMsg = (jspMsg == null)? serviceClientMsg : jspMsg + "<br>" + serviceClientMsg ;
+				}
 			}
 		}
 
