@@ -75,11 +75,10 @@ function ajaxFetchOrders() {
 		   data: { excludeIds: JSON.stringify(ids), mItemCategory: currentStation},
 		   success: 
 			   	function(data, textStatus, jqXHR) {
-		   			console.log(data);
 		   			if (data.valid === undefined) {
-		   				alert('Malformed server response (ajax)');
+		   				alert('Malformed Server Response');
 		   			} else if (data.valid === false) {
-			   			alert('failed to fetch new orders: ' + data.message);
+			   			alert('Failed To Fetch New Orders: ' + data.message);
 			   		} else if (data.valid === true) {
 			   			if (data.orders.length > 0) {
 			   				appendNewOrders(data.orders);
@@ -88,8 +87,12 @@ function ajaxFetchOrders() {
 			   		}
 		    	},
 		    error: 
-		    	function(data) {
-		        	alert('Error: AJAX in ajaxFetchOrders() Check if the server is running');
+		    	function(xhr, status, error) {
+					var msg = xhr.responseText;
+					if (msg.length === 0) {
+						msg = "Cannot Connect To The Server"
+					}
+			       	alert('Error: ' + msg);
 		    	}
 	});
 }
@@ -102,11 +105,10 @@ function ajaxUpdateOrder(updatedOrder) {
 		   data: { order: JSON.stringify(updatedOrder), mItemCategory: currentStation},
 		   success: 
 			   	function(data, textStatus, jqXHR) {
-		   			console.log(data);
 			   		if (data.updated === undefined) {
-			   			alert('Malformed server response (ajax)');
+			   			alert('Malformed Server Response');
 			   		} else if (data.updated === false) {
-		   				alert('failed to update order: ' + data.message);
+		   				alert('Failed To Update Order: ' + data.message);
 			   		} else if (data.updated === true) {
 			   			while (true) {
 			   				if (updatingList === false) {
@@ -122,8 +124,12 @@ function ajaxUpdateOrder(updatedOrder) {
 			   		}
 		    	},
 		    error: 
-		    	function(data) {
-		        	alert('Error: AJAX in ajaxUpdateOrder(). Check if the server is running');
+		    	function(xhr, status, error) {
+					var msg = xhr.responseText;
+					if (msg.length === 0) {
+						msg = "Cannot Connect To The Server"
+					}
+			       	alert('Error: ' + msg);
 		    	}
 	});
 }
@@ -139,9 +145,6 @@ function appendNewOrders(newOrders) {
 		for (var j=0; j < items.length; j++) {
 			var oItem = items[j];
 			var menuItem = oItem.menuItem;
-			
-			console.log(oItem.status + ' -- Not Ready? ' + (oItem.status === 'NOT_READY'));
-			console.log(menuItem.itemCategory + ' -- Same station? ' + (menuItem.itemCategory === currentStation));
 			
 			if (menuItem.itemCategory === currentStation && oItem.status === 'NOT_READY') {
 				var mItemInput = $('<input />', {type:"hidden", name:'mItemId', value:"" + menuItem.id });
