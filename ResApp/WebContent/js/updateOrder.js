@@ -98,6 +98,12 @@ function isValidAddressData() {
 	return isValidAddress(address);
 }
 
+function isAllDigits(s) {
+	if(/^[0-9]+$/.test(s))
+	    return true;
+	 return false;
+}
+
 function isValidAddress(address) {
 	 if (address === null)
 		 return false;

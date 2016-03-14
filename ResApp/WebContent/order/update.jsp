@@ -144,7 +144,7 @@
 			</table>
 			</div>
 		
-			<div id="orderItemsMessage"> At least one item should have none zero quantity</div>
+			<div class="invalidDataMessage" id="orderItemsMessage"> At least one item should have none zero quantity</div>
 			
 			<div>
 			<h3> Order Items </h3>
