@@ -153,8 +153,8 @@ function isValidCCPaymentData() {
 	var ccPayment = {
 		ccNumber: $("input[name='ccNumber']").val().trim(),
 		ccHolderName : $("input[name='ccHolderName']").val().trim(),
-		month : getIntValue($("input[name='ccExpMonth']").val().trim()),
-		year : getIntValue($("input[name='ccExpYear']").val().trim())
+		expMonth : getIntValue($("input[name='ccExpMonth']").val().trim()),
+		expYear : getIntValue($("input[name='ccExpYear']").val().trim())
 	};
 	
 	return isValidCCPayment(ccPayment);
