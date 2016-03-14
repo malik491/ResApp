@@ -53,9 +53,15 @@ public class Update extends BaseAction {
 					Boolean updated = serviceClient.update(updatedMenuItem);
 					jspMsg = (updated == null)? serviceClient.getResponseMessage() : "Successfully updated menu item";					
 				} else {
+					if (updatedMenuItem.getItemCategory() != null)
+						jspMsg = "Invalid New Menu Item Data (reloaded old valid data)";
+					
 					// load menu item to update
 					updatedMenuItem = serviceClient.get(menuItemId);
-					jspMsg = (updatedMenuItem == null)? serviceClient.getResponseMessage() : null;					
+					if (updatedMenuItem == null) {
+						String serviceClientMsg = serviceClient.getResponseMessage();
+						jspMsg = (jspMsg == null)? serviceClientMsg : jspMsg + "<br>" + serviceClientMsg;					
+					}			
 				}
 			}
 			
