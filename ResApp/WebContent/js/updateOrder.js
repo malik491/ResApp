@@ -4,14 +4,30 @@
 $(document).ready(function(){
 	setOrderType();
 	$('#orderItemsMessage').hide();
+	$('#addressMessage').hide();
 	
 	$('#updateForm').submit(function(event) {
+		var isValid = true;
+		
+		if ($("#orderType").val() === 'DELIVERY') {
+			isValid = isValidAddressData();
+			if (isValid === false) {
+				$('#addressMessage').show();
+			} else {
+				$('#addressMessage').hide();
+			}
+		}
+		
 		var isAllZero = isAllZeroQuantity();
 		if (isAllZero === true) {
+			isValid = false;
 			$('#orderItemsMessage').show();
-			event.preventDefault();
 		} else {
 			$('#orderItemsMessage').hide();
+		}
+		
+		if (isValid === false) {
+			event.preventDefault();
 		}
 	});
 	
@@ -35,6 +51,7 @@ function setOrderType() {
 }
 
 function selectPickupOrder() {
+	$('#addressMessage').hide();
 	$('#deliveryaddress').hide();
 	
 	var line1Input = $("input[name='addrLine1']").removeAttr('required');
@@ -64,4 +81,38 @@ function isAllZeroQuantity() {
 		}
 	}
 	return allZero;
+}
+
+function isValidAddressData() {
+	var line2Val = $("input[name='addrLine2']").val().trim();
+	line2Val = line2Val.length > 0? line2Val : null;
+	
+	var address = {
+			line1 : $("input[name='addrLine1']").val().trim(),
+			line2: line2Val,
+			city  : $("input[name='addrCity']").val().trim(),
+			state : $($("select[name='addrState'] option:selected")[0]).text().trim(),
+			zipcode : $("input[name='addrZipCode']").val().trim()
+	};
+	
+	return isValidAddress(address);
+}
+
+function isValidAddress(address) {
+	 if (address === null)
+		 return false;
+	 if (address.line1 === null || address.line1.length < 1 || address.line1.length > 100)
+		 return false;
+	 if (address.line2 !== null && address.line2.length > 100)
+		 return false;
+	 if (address.city === null || address.city.length < 1 || address.city.length > 100)
+		 return false;
+	 if (address.zipcode === null || address.zipcode.length < 5 || address.zipcode.length > 10)
+		 return false;
+	 if (isAllDigits(address.zipcode) === false)
+		 return false;
+	 if (address.state === null || address.state.length !== 2)
+		 return false;
+	 
+	 return true;
 }

@@ -102,6 +102,7 @@
 			</table> 
 			</div>
 			
+			<div class="invalidDataMessage" id="addressMessage"> Invalid Address Data </div>
 			<div id="deliveryaddress">
 			<h3> Delivery Address </h3>
 			<table>
