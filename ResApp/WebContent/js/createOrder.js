@@ -5,14 +5,40 @@ $(document).ready(function(){
 	selectPickupOrder();
 	selectCashPayment();
 	$('#orderItemsMessage').hide();
+	$('#addressMessage').hide();
+	$('#creditCardMessage').hide();
 	
 	$('#createForm').submit(function(event) {
+		var isValid = true;
+		
+		if ($("#paymentType").val() === 'CREDIT_CARD') {
+			isValid = isValidCCPaymentData();
+			if (isValid === false) {
+				$('#creditCardMessage').show();
+			} else {
+				$('#creditCardMessage').hide();
+			}
+		}
+		
+		if ($("#orderType").val() === 'DELIVERY') {
+			isValid = isValidAddressData();
+			if (isValid === false) {
+				$('#addressMessage').show();
+			} else {
+				$('#addressMessage').hide();
+			}
+		}
+		
 		var isAllZero = isAllZeroQuantity();
 		if (isAllZero === true) {
+			isValid = false;
 			$('#orderItemsMessage').show();
-			event.preventDefault();
 		} else {
 			$('#orderItemsMessage').hide();
+		}
+		
+		if (isValid === false) {
+			event.preventDefault();
 		}
 	});
 	
@@ -35,8 +61,8 @@ $(document).ready(function(){
 	});
 });
 
-
 function selectCashPayment() {
+	$('#creditCardMessage').hide();
 	$('#creditcard').hide();
 	
 	var numberInput = $("input[name='ccNumber']").removeAttr('required');
@@ -46,6 +72,8 @@ function selectCashPayment() {
 	
 	$(numberInput).val('');
 	$(nameInput).val('');
+	$(monthInput).val('1');
+	$(yearInput).val('2016');
 }
 
 function selectCreditCardPayment() {
@@ -56,11 +84,14 @@ function selectCreditCardPayment() {
 	
 	$(numberInput).val('');
 	$(nameInput).val('');
+	$(monthInput).val('1');
+	$(yearInput).val('2016');
 	
 	$('#creditcard').show();
 }
 
 function selectPickupOrder() {
+	$('#addressMessage').hide();
 	$('#deliveryaddress').hide();
 	
 	var line1Input = $("input[name='addrLine1']").removeAttr('required');
@@ -102,4 +133,87 @@ function isAllZeroQuantity() {
 		}
 	}
 	return allZero;
+}
+
+
+function getIntValue(stringValue) {
+	 if(/^[0-9]+$/.test(stringValue))
+	    return Number(stringValue);
+	 return NaN;
+}
+
+function isAllDigits(s) {
+	if(/^[0-9]+$/.test(s))
+	    return true;
+	 return false;
+}
+
+
+function isValidCCPaymentData() {
+	var ccPayment = {
+		ccNumber: $("input[name='ccNumber']").val().trim(),
+		ccHolderName : $("input[name='ccHolderName']").val().trim(),
+		month : getIntValue($("input[name='ccExpMonth']").val().trim()),
+		year : getIntValue($("input[name='ccExpYear']").val().trim())
+	};
+	
+	return isValidCCPayment(ccPayment);
+}
+
+function isValidCCPayment(ccPayment) {
+	 if (ccPayment === null)
+		 return false;
+	if (ccPayment.ccNumber === null || ccPayment.ccNumber.length < 12 ||ccPayment.ccNumber.length > 19)
+		 return false;
+	if (isAllDigits(ccPayment.ccNumber) === false)
+		return false;
+	if (ccPayment.ccHolderName === null || ccPayment.ccHolderName.length < 3 || ccPayment.ccHolderName.length > 100)
+		 return false;
+	if (isNaN(ccPayment.expMonth) || ccPayment.expMonth < 1 || ccPayment.expMonth > 12)
+		 return false;
+	if (isNaN(ccPayment.expYear) || ccPayment.expYear < 1996 || ccPayment.expYear > 2036)
+		 return false;
+	
+	var currentYear = new Date().getFullYear();
+	if (currentYear === ccPayment.expYear) {
+		var currentMonth = new Date().getMonth();
+		if (ccPayment.expMonth < currentMonth)
+			return false;
+	}
+	
+	return true;
+}
+
+function isValidAddressData() {
+	var line2Val = $("input[name='addrLine2']").val().trim();
+	line2Val = line2Val.length > 0? line2Val : null;
+	
+	var address = {
+			line1 : $("input[name='addrLine1']").val().trim(),
+			line2: line2Val,
+			city  : $("input[name='addrCity']").val().trim(),
+			state : $($("select[name='addrState'] option:selected")[0]).text().trim(),
+			zipcode : $("input[name='addrZipCode']").val().trim()
+	};
+	
+	return isValidAddress(address);
+}
+
+function isValidAddress(address) {
+	 if (address === null)
+		 return false;
+	 if (address.line1 === null || address.line1.length < 1 || address.line1.length > 100)
+		 return false;
+	 if (address.line2 !== null && address.line2.length > 100)
+		 return false;
+	 if (address.city === null || address.city.length < 1 || address.city.length > 100)
+		 return false;
+	 if (address.zipcode === null || address.zipcode.length < 5 || address.zipcode.length > 10)
+		 return false;
+	 if (isAllDigits(address.zipcode) === false)
+		 return false;
+	 if (address.state === null || address.state.length !== 2)
+		 return false;
+	 
+	 return true;
 }

@@ -66,7 +66,7 @@
 			</table>
 			</div>
 			
-			
+			<div class="invalidDataMessage" id="addressMessage"> Invalid Address Data </div>
 			<div id="deliveryaddress">
 			<h3> Delivery Address </h3>
 			<table>
@@ -103,7 +103,8 @@
 			</tbody>
 			</table>
 			</div>
-						
+			
+			<div class="invalidDataMessage"  id="creditCardMessage"> Invalid Credit Card Data </div>			
 			<div id="creditcard">
 			<h3>Credit Card</h3>	
 			<table>
@@ -137,7 +138,7 @@
 			</table>
 			</div>
 			
-			<div id="orderItemsMessage"> At least one item should have none zero quantity</div>
+			<div class="invalidDataMessage" id="orderItemsMessage"> At least one item should have none zero quantity</div>
 			
 			<div>
 			<h3> Order Items </h3>

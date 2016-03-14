@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="edu.depaul.se491.utils.ParamLabels,edu.depaul.se491.utils.ParamValues,edu.depaul.se491.utils.ParamLengths" %>
 <%@ page import="edu.depaul.se491.beans.AccountBean,edu.depaul.se491.beans.MenuItemBean" %>
-<%@ page import="edu.depaul.se491.enums.AddressState,edu.depaul.se491.enums.PaymentType,edu.depaul.se491.enums.OrderType,edu.depaul.se491.enums.MenuItemCategory,edu.depaul.se491.enums.AccountRole" %>
+<%@ page import="edu.depaul.se491.enums.*" %>
+<%@ page import="edu.depaul.se491.utils.ParamLengths, edu.depaul.se491.utils.ParamLabels" %>
+<%@ page import="edu.depaul.se491.utils.ParamValues, edu.depaul.se491.utils.ParamPatterns" %>
+
 <%
 	AccountRole loggedInRole = null;
 	// session not thread safe
@@ -118,18 +120,36 @@
 	
 	<div class="overlay-additional" id="pos_order_address">
 		<table>
-			<tr> <td>Line 1 :</td> <td> <input type="text" name="address_line_1" title="string between 3-100" required> </td> </tr>
-			<tr> <td>Line 2 :</td> <td> <input type="text" name="address_line_2" title="optional string between 3-100"> </td> </tr>
-			<tr> <td>City :	 </td> <td> <input type="text" name="address_city" title="string between 3-100" required> </td> </tr>
+			<tr> <td>Line 1 :</td> 
+				<td> <input type="text" name="address_line_1" pattern="<%=ParamPatterns.Address.LINE_1%>" 
+						 title="length <%=ParamLengths.Address.MIN_LINE1%>-<%=ParamLengths.Address.MAX_LINE1%>" required="required"> 
+				</td>
+			</tr>
+			<tr> <td>Line 2 :</td>
+				<td> <input type="text" name="address_line_2" value="" maxLength="<%=ParamLengths.Address.MAX_LINE2%>"
+					 	title="length <%=ParamLengths.Address.MIN_LINE2%>-<%=ParamLengths.Address.MAX_LINE2%>"> 
+				</td>
+			</tr>
+			
+			<tr> <td>City :	 </td> 
+				 <td> <input type="text" name="address_city" pattern="<%=ParamPatterns.Address.CITY%>" 
+					 	 title="length <%=ParamLengths.Address.MIN_CITY%>-<%=ParamLengths.Address.MAX_CITY%>" required="required"> 
+				 </td> 
+			</tr>
+			
 			<tr> <td>State : </td> 
-				<td> <select name="address_state" required>
+				<td> <select name="address_state" required="required">
 <%				for (AddressState state: AddressState.values()) {
 %>					<option value="<%=state.name()%>" <%if (state == AddressState.IL){%> selected <%}%>> <%=state.name()%> </option>
 <%				} 
 %>				 </select>
 				</td>
 			</tr>
-			<tr> <td>Zipcode :</td> <td> <input type="text" name="address_zipcode" title="all digit string between 5-10" required> </td> </tr>
+			<tr> <td>Zipcode :</td> 
+			 	 <td> <input type="text" name="address_zipcode" pattern="<%=ParamPatterns.Address.ZIPCODE%>" 
+						 title="plain <%=ParamLengths.Address.MIN_ZIPCODE%>-<%=ParamLengths.Address.MAX_ZIPCODE%> digits" required="required">
+				 </td> 
+			</tr>
 		</table>
 	</div>
 	<div class="overlay-action-btn">
@@ -164,24 +184,24 @@
 	 	<table>
 			<tr> <td>Number (12-19 digits):</td> 
 				 <td> <input name="creditcard_number" type="text" 
-				  title="digit string. length <%=ParamLengths.CreditCard.MIN_NUMBER%>-<%=ParamLengths.CreditCard.MAX_NUMBER%>" required> 
+				  title="plain digits. length <%=ParamLengths.CreditCard.MIN_NUMBER%>-<%=ParamLengths.CreditCard.MAX_NUMBER%>" required="required"> 
 				 </td> 
 			</tr>
 			<tr> <td>Holder&#39;s Name :</td> 
 				 <td> <input name="creditcard_holder_name" type="text" 
-				  title="length <%=ParamLengths.CreditCard.MIN_HOLDER_NAME%>-<%=ParamLengths.CreditCard.MAX_HOLDER_NAME%>" required> 
+				  title="length <%=ParamLengths.CreditCard.MIN_HOLDER_NAME%>-<%=ParamLengths.CreditCard.MAX_HOLDER_NAME%>" required="required"> 
 				 </td> 
 			</tr>
 			<tr> <td>Expiration Month : </td> 
 				 <td> <input type="number" name="creditcard_month" value="1"
 				 		min="<%=ParamValues.CreditCard.MIN_EXP_MONTH%>" max="<%=ParamValues.CreditCard.MAX_EXP_MONTH%>"
-				 		title="number between <%=ParamValues.CreditCard.MIN_EXP_MONTH%>-<%=ParamValues.CreditCard.MAX_EXP_MONTH%>" required> 
+				 		title="number between <%=ParamValues.CreditCard.MIN_EXP_MONTH%>-<%=ParamValues.CreditCard.MAX_EXP_MONTH%>" required="required"> 
 				 <td>
 			</tr>
 			<tr> <td>Expiration Year : </td> 
 				 <td> <input type="number" name="creditcard_year" value="2016"
 				  min="<%=ParamValues.CreditCard.MIN_EXP_YEAR%>" max="<%=ParamValues.CreditCard.MAX_EXP_YEAR%>"
-				  title="year between <%=ParamValues.CreditCard.MIN_EXP_YEAR%>-<%=ParamValues.CreditCard.MAX_EXP_YEAR%>" required> 
+				  title="year between <%=ParamValues.CreditCard.MIN_EXP_YEAR%>-<%=ParamValues.CreditCard.MAX_EXP_YEAR%>" required="required"> 
 				 </td> 
 			</tr>
 		</table> 	
